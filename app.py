@@ -3,6 +3,7 @@ import ssl
 import threading
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
+from dotenv import load_dotenv
 from flask import Flask, jsonify, request, send_from_directory
 import pymysql
 from pymysql.constants import CLIENT
