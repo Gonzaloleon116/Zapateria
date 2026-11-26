@@ -8,6 +8,8 @@ import pymysql
 from pymysql.constants import CLIENT
 from werkzeug.security import check_password_hash, generate_password_hash
 
+
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TALLAS = ["24", "24.5", "25", "25.5", "26", "26.5", "27", "27.5", "28"]
 MX_TZ = ZoneInfo("America/Mexico_City")
@@ -33,6 +35,7 @@ _local = threading.local()
 def now_mx():
     return datetime.now(MX_TZ)
 
+load_dotenv()
 
 def get_db():
     """Reutiliza la conexión SSL abierta en el hilo actual."""
