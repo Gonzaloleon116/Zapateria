@@ -12,6 +12,20 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TALLAS = ["24", "24.5", "25", "25.5", "26", "26.5", "27", "27.5", "28"]
 MX_TZ = ZoneInfo("America/Mexico_City")
 
+MULTI_ESTADO_SQL = """
+SELECT temporada_actual, umbral_alerta_seg FROM configuracion WHERE id_config = 1;
+SELECT * FROM usuarios ORDER BY orden_turno ASC, id_usuario ASC;
+SELECT id_vendedor, COALESCE(SUM(cantidad),0) AS pares, COALESCE(SUM(total_pagado),0) AS monto, COALESCE(SUM(comision),0) AS com FROM ventas GROUP BY id_vendedor;
+SELECT id_cliente, hora_llegada FROM clientes_espera WHERE estado = 'Esperando' ORDER BY id_cliente ASC;
+SELECT id_cliente, vendedor_asignado, tiempo_espera_seg, hora_atencion_str FROM clientes_espera WHERE estado = 'Atendido' ORDER BY id_cliente ASC;
+SELECT * FROM pedidos_bodega WHERE estado IN ('En preparación', 'Listo') ORDER BY id_pedido ASC;
+SELECT pi.* FROM pedido_items pi INNER JOIN pedidos_bodega pb ON pb.id_pedido = pi.id_pedido WHERE pb.estado IN ('En preparación', 'Listo') ORDER BY pi.id_item ASC;
+SELECT * FROM ventas ORDER BY id_venta ASC;
+SELECT * FROM productos WHERE activo = 1 ORDER BY sku ASC;
+SELECT sku, talla, existencia FROM inventario_tallas;
+SELECT * FROM proveedores WHERE activo = 1 ORDER BY id_proveedor ASC;
+"""
+
 app = Flask(__name__)
 _local = threading.local()
 
@@ -54,7 +68,6 @@ def get_db():
 
 
 def _exec_schema_sql(cur):
-    """Execute schema.sql statements one by one."""
     schema_path = os.path.join(BASE_DIR, "schema.sql")
     with open(schema_path, "r", encoding="utf-8") as f:
         raw = f.read()
@@ -67,7 +80,6 @@ def _exec_schema_sql(cur):
 
 
 def init_db():
-    """Verify database tables exist and seed initial data if empty."""
     conn = get_db()
     try:
         with conn.cursor() as cur:
@@ -88,7 +100,6 @@ def init_db():
 
 
 def _dt_to_ms(dt):
-    """Convert MySQL DATETIME (UTC/naive) to JS epoch milliseconds."""
     if not dt:
         return None
     if dt.tzinfo is None:
@@ -97,7 +108,6 @@ def _dt_to_ms(dt):
 
 
 def _verify_password(stored, provided):
-    """Support hashed passwords and legacy seeded plaintext passwords."""
     if stored.startswith(("pbkdf2:", "scrypt:")):
         return check_password_hash(stored, provided)
     return stored == provided
@@ -110,7 +120,6 @@ def _comision_por_par(cur):
 
 
 def _asignar_siguiente_cliente(cur, v_id, v_nombre):
-    """Assign the oldest waiting client to vendor v_id if one exists."""
     cur.execute(
         "SELECT id_cliente, hora_llegada FROM clientes_espera "
         "WHERE estado = 'Esperando' ORDER BY id_cliente ASC LIMIT 1"
@@ -136,6 +145,171 @@ def _asignar_siguiente_cliente(cur, v_id, v_nombre):
     return cli["id_cliente"]
 
 
+def build_estado(cur):
+    """Obtiene todo el estado del sistema en 1 solo viaje a MySQL."""
+    cur.execute(MULTI_ESTADO_SQL)
+    cfg_rows = cur.fetchall()
+    cur.nextset()
+    u_rows = cur.fetchall()
+    cur.nextset()
+    stat_rows = cur.fetchall()
+    cur.nextset()
+    cola_rows = cur.fetchall()
+    cur.nextset()
+    atend_rows = cur.fetchall()
+    cur.nextset()
+    p_rows = cur.fetchall()
+    cur.nextset()
+    pi_rows = cur.fetchall()
+    cur.nextset()
+    v_rows = cur.fetchall()
+    cur.nextset()
+    prod_rows = cur.fetchall()
+    cur.nextset()
+    inv_rows = cur.fetchall()
+    cur.nextset()
+    prov_rows = cur.fetchall()
+    while cur.nextset():
+        pass
+
+    cfg = cfg_rows[0] if cfg_rows else {"temporada_actual": "Regular", "umbral_alerta_seg": 180}
+    users = [
+        {
+            "id": u["id_usuario"],
+            "u": u["username"],
+            "rol": u["rol"],
+            "n": u["nombre_completo"],
+            "dni_rfc": u["dni_rfc"],
+            "correo": u["correo"],
+            "activo": bool(u["activo"]),
+        }
+        for u in u_rows
+    ]
+
+    stats = {r["id_vendedor"]: r for r in stat_rows}
+    vend = []
+    order = []
+    for u in u_rows:
+        if u["rol"] == "vendedor" and u["activo"]:
+            st = stats.get(u["id_usuario"], {})
+            vend.append({
+                "id": u["id_usuario"],
+                "n": u["nombre_completo"],
+                "st": u["estado_piso"],
+                "cli": u["cliente_actual"],
+                "pares": int(st.get("pares", 0)),
+                "monto": float(st.get("monto", 0)),
+                "com": float(st.get("com", 0)),
+            })
+            order.append(u["id_usuario"])
+
+    cola = [{"id": c["id_cliente"], "t0": _dt_to_ms(c["hora_llegada"])} for c in cola_rows]
+    atendidos = [
+        {
+            "v": a["vendedor_asignado"],
+            "c": a["id_cliente"],
+            "esp": int(a["tiempo_espera_seg"] or 0),
+            "h": a["hora_atencion_str"] or "",
+        }
+        for a in atend_rows
+    ]
+
+    ped_map = {}
+    pedidos = []
+    for p in p_rows:
+        obj = {
+            "id": p["id_pedido"],
+            "v": p["id_vendedor"],
+            "cli": p["numero_cliente"],
+            "est": p["estado"],
+            "desc": float(p["descuento_global"] or 0),
+            "t0": _dt_to_ms(p["fecha_creacion"]),
+            "tListo": _dt_to_ms(p["fecha_listo"]),
+            "items": [],
+        }
+        ped_map[p["id_pedido"]] = obj
+        pedidos.append(obj)
+
+    for it in pi_rows:
+        if it["id_pedido"] in ped_map:
+            ped_map[it["id_pedido"]]["items"].append({
+                "itemId": it["id_item"],
+                "sku": it["sku"],
+                "mod": it["modelo"],
+                "cat": it["categoria"],
+                "seg": it["segmento"],
+                "t": it["talla"],
+                "cant": int(it["cantidad"]),
+                "pr": float(it["precio_unitario"]),
+                "loc": it["ubicacion"],
+                "est": it["estado"],
+            })
+
+    ventas = [
+        {
+            "folio": v["folio"],
+            "fechaISO": v["fecha_iso"].isoformat() if hasattr(v["fecha_iso"], "isoformat") else str(v["fecha_iso"]),
+            "hora": v["hora_str"],
+            "v": v["nombre_vendedor"],
+            "vId": v["id_vendedor"],
+            "sku": v["sku"],
+            "mod": v["modelo"],
+            "cat": v["categoria"],
+            "seg": v["segmento"],
+            "t": v["talla"],
+            "cant": int(v["cantidad"]),
+            "precioUnit": float(v["precio_unitario"]),
+            "subtotal": float(v["subtotal"]),
+            "descuento": float(v["descuento"]),
+            "tot": float(v["total_pagado"]),
+            "c": float(v["comision"]),
+        }
+        for v in v_rows
+    ]
+
+    inv_map = {}
+    for r in inv_rows:
+        inv_map.setdefault(r["sku"], {})[r["talla"]] = int(r["existencia"])
+
+    prod = [
+        {
+            "sku": p["sku"],
+            "mod": p["modelo"],
+            "cat": p["categoria"],
+            "seg": p["segmento"],
+            "pr": float(p["precio"]),
+            "loc": p["ubicacion"],
+            "st": inv_map.get(p["sku"], {}),
+        }
+        for p in prod_rows
+    ]
+
+    proveedores = [
+        {
+            "id": pr["id_proveedor"],
+            "nombre": pr["nombre"],
+            "contacto": pr["contacto"],
+            "telefono": pr["telefono"],
+            "correo": pr["correo"],
+            "categoria_calzado": pr["categoria_calzado"],
+        }
+        for pr in prov_rows
+    ]
+
+    return {
+        "config": {"temp": cfg["temporada_actual"], "umbral": str(cfg["umbral_alerta_seg"])},
+        "users": users,
+        "vend": vend,
+        "order": order,
+        "cola": cola,
+        "atendidos": atendidos,
+        "pedidos": pedidos,
+        "ventas": ventas,
+        "prod": prod,
+        "proveedores": proveedores,
+    }
+
+
 @app.route("/")
 def index():
     return send_from_directory(BASE_DIR, "34408cc311.html")
@@ -155,6 +329,7 @@ def api_login():
                 return jsonify({"ok": False, "error": "Usuario o contraseña incorrectos. Revisa los datos e inténtalo de nuevo."}), 401
             if not u["activo"]:
                 return jsonify({"ok": False, "error": "Esta cuenta se encuentra inactiva. Contacta al administrador."}), 403
+            estado = build_estado(cur)
             return jsonify({
                 "ok": True,
                 "user": {
@@ -166,6 +341,7 @@ def api_login():
                     "correo": u["correo"],
                     "activo": bool(u["activo"]),
                 },
+                "estado": estado,
             })
     finally:
         conn.rollback()
@@ -176,171 +352,7 @@ def api_estado():
     conn = get_db()
     try:
         with conn.cursor() as cur:
-            cur.execute("SELECT temporada_actual, umbral_alerta_seg FROM configuracion WHERE id_config = 1")
-            cfg = cur.fetchone() or {"temporada_actual": "Regular", "umbral_alerta_seg": 180}
-
-            cur.execute("SELECT * FROM usuarios ORDER BY orden_turno ASC, id_usuario ASC")
-            u_rows = cur.fetchall()
-            users = [
-                {
-                    "id": u["id_usuario"],
-                    "u": u["username"],
-                    "rol": u["rol"],
-                    "n": u["nombre_completo"],
-                    "dni_rfc": u["dni_rfc"],
-                    "correo": u["correo"],
-                    "activo": bool(u["activo"]),
-                }
-                for u in u_rows
-            ]
-
-            cur.execute(
-                "SELECT id_vendedor, COALESCE(SUM(cantidad),0) AS pares, "
-                "COALESCE(SUM(total_pagado),0) AS monto, COALESCE(SUM(comision),0) AS com "
-                "FROM ventas GROUP BY id_vendedor"
-            )
-            stats = {r["id_vendedor"]: r for r in cur.fetchall()}
-
-            vend = []
-            order = []
-            for u in u_rows:
-                if u["rol"] == "vendedor" and u["activo"]:
-                    st = stats.get(u["id_usuario"], {})
-                    vend.append({
-                        "id": u["id_usuario"],
-                        "n": u["nombre_completo"],
-                        "st": u["estado_piso"],
-                        "cli": u["cliente_actual"],
-                        "pares": int(st.get("pares", 0)),
-                        "monto": float(st.get("monto", 0)),
-                        "com": float(st.get("com", 0)),
-                    })
-                    order.append(u["id_usuario"])
-
-            cur.execute("SELECT id_cliente, hora_llegada FROM clientes_espera WHERE estado = 'Esperando' ORDER BY id_cliente ASC")
-            cola = [{"id": c["id_cliente"], "t0": _dt_to_ms(c["hora_llegada"])} for c in cur.fetchall()]
-
-            cur.execute(
-                "SELECT id_cliente, vendedor_asignado, tiempo_espera_seg, hora_atencion_str "
-                "FROM clientes_espera WHERE estado = 'Atendido' ORDER BY id_cliente ASC"
-            )
-            atendidos = [
-                {
-                    "v": a["vendedor_asignado"],
-                    "c": a["id_cliente"],
-                    "esp": int(a["tiempo_espera_seg"] or 0),
-                    "h": a["hora_atencion_str"] or "",
-                }
-                for a in cur.fetchall()
-            ]
-
-            cur.execute(
-                "SELECT * FROM pedidos_bodega WHERE estado IN ('En preparación', 'Listo') ORDER BY id_pedido ASC"
-            )
-            p_rows = cur.fetchall()
-            ped_map = {}
-            pedidos = []
-            for p in p_rows:
-                obj = {
-                    "id": p["id_pedido"],
-                    "v": p["id_vendedor"],
-                    "cli": p["numero_cliente"],
-                    "est": p["estado"],
-                    "desc": float(p["descuento_global"] or 0),
-                    "t0": _dt_to_ms(p["fecha_creacion"]),
-                    "tListo": _dt_to_ms(p["fecha_listo"]),
-                    "items": [],
-                }
-                ped_map[p["id_pedido"]] = obj
-                pedidos.append(obj)
-
-            if ped_map:
-                cur.execute(
-                    "SELECT * FROM pedido_items WHERE id_pedido IN %s ORDER BY id_item ASC",
-                    (tuple(ped_map.keys()),),
-                )
-                for it in cur.fetchall():
-                    ped_map[it["id_pedido"]]["items"].append({
-                        "itemId": it["id_item"],
-                        "sku": it["sku"],
-                        "mod": it["modelo"],
-                        "cat": it["categoria"],
-                        "seg": it["segmento"],
-                        "t": it["talla"],
-                        "cant": int(it["cantidad"]),
-                        "pr": float(it["precio_unitario"]),
-                        "loc": it["ubicacion"],
-                        "est": it["estado"],
-                    })
-
-            cur.execute("SELECT * FROM ventas ORDER BY id_venta ASC")
-            ventas = [
-                {
-                    "folio": v["folio"],
-                    "fechaISO": v["fecha_iso"].isoformat() if hasattr(v["fecha_iso"], "isoformat") else str(v["fecha_iso"]),
-                    "hora": v["hora_str"],
-                    "v": v["nombre_vendedor"],
-                    "vId": v["id_vendedor"],
-                    "sku": v["sku"],
-                    "mod": v["modelo"],
-                    "cat": v["categoria"],
-                    "seg": v["segmento"],
-                    "t": v["talla"],
-                    "cant": int(v["cantidad"]),
-                    "precioUnit": float(v["precio_unitario"]),
-                    "subtotal": float(v["subtotal"]),
-                    "descuento": float(v["descuento"]),
-                    "tot": float(v["total_pagado"]),
-                    "c": float(v["comision"]),
-                }
-                for v in cur.fetchall()
-            ]
-
-            cur.execute("SELECT * FROM productos WHERE activo = 1 ORDER BY sku ASC")
-            prod_rows = cur.fetchall()
-            cur.execute("SELECT sku, talla, existencia FROM inventario_tallas")
-            inv_map = {}
-            for r in cur.fetchall():
-                inv_map.setdefault(r["sku"], {})[r["talla"]] = int(r["existencia"])
-
-            prod = [
-                {
-                    "sku": p["sku"],
-                    "mod": p["modelo"],
-                    "cat": p["categoria"],
-                    "seg": p["segmento"],
-                    "pr": float(p["precio"]),
-                    "loc": p["ubicacion"],
-                    "st": inv_map.get(p["sku"], {}),
-                }
-                for p in prod_rows
-            ]
-
-            cur.execute("SELECT * FROM proveedores WHERE activo = 1 ORDER BY id_proveedor ASC")
-            proveedores = [
-                {
-                    "id": pr["id_proveedor"],
-                    "nombre": pr["nombre"],
-                    "contacto": pr["contacto"],
-                    "telefono": pr["telefono"],
-                    "correo": pr["correo"],
-                    "categoria_calzado": pr["categoria_calzado"],
-                }
-                for pr in cur.fetchall()
-            ]
-
-            return jsonify({
-                "config": {"temp": cfg["temporada_actual"], "umbral": str(cfg["umbral_alerta_seg"])},
-                "users": users,
-                "vend": vend,
-                "order": order,
-                "cola": cola,
-                "atendidos": atendidos,
-                "pedidos": pedidos,
-                "ventas": ventas,
-                "prod": prod,
-                "proveedores": proveedores,
-            })
+            return jsonify(build_estado(cur))
     finally:
         conn.rollback()
 
@@ -358,7 +370,7 @@ def api_config():
                 (temp, umbral),
             )
             conn.commit()
-        return jsonify({"ok": True})
+            return jsonify({"ok": True, "estado": build_estado(cur)})
     finally:
         conn.rollback()
 
@@ -389,12 +401,20 @@ def api_checkin():
                     (cid, mx + 1, v["id_usuario"]),
                 )
                 conn.commit()
-                return jsonify({"ok": True, "msg": f"🎯 ¡Atención asignada! Cliente #{cid} asignado automáticamente a {v['nombre_completo']}."})
+                return jsonify({
+                    "ok": True,
+                    "msg": f"🎯 ¡Atención asignada! Cliente #{cid} asignado automáticamente a {v['nombre_completo']}.",
+                    "estado": build_estado(cur),
+                })
             else:
                 cur.execute("INSERT INTO clientes_espera (hora_llegada, estado) VALUES (UTC_TIMESTAMP(), 'Esperando')")
                 cid = cur.lastrowid
                 conn.commit()
-                return jsonify({"ok": True, "msg": f"Cliente #{cid} registrado en fila de espera (todos los vendedores están ocupados o en descanso)."})
+                return jsonify({
+                    "ok": True,
+                    "msg": f"Cliente #{cid} registrado en fila de espera (todos los vendedores están ocupados o en descanso).",
+                    "estado": build_estado(cur),
+                })
     finally:
         conn.rollback()
 
@@ -416,7 +436,11 @@ def api_asignar():
             if not cid:
                 return jsonify({"ok": False, "msg": "No hay clientes en fila de espera."}), 400
             conn.commit()
-            return jsonify({"ok": True, "msg": f"{v['nombre_completo']} asignado manualmente al cliente {cid}."})
+            return jsonify({
+                "ok": True,
+                "msg": f"{v['nombre_completo']} asignado manualmente al cliente {cid}.",
+                "estado": build_estado(cur),
+            })
     finally:
         conn.rollback()
 
@@ -444,7 +468,7 @@ def api_vendedor_estado(id):
             else:
                 cur.execute("UPDATE usuarios SET estado_piso = %s WHERE id_usuario = %s", (nuevo_st, id))
             conn.commit()
-            return jsonify({"ok": True, "msg": msg})
+            return jsonify({"ok": True, "msg": msg, "estado": build_estado(cur)})
     finally:
         conn.rollback()
 
@@ -466,7 +490,7 @@ def api_vendedor_finalizar(id):
                 cur.execute("UPDATE usuarios SET estado_piso = 'Disponible', cliente_actual = NULL WHERE id_usuario = %s", (id,))
                 msg = f"{v['nombre_completo']} quedó disponible para recibir clientes."
             conn.commit()
-            return jsonify({"ok": True, "msg": msg})
+            return jsonify({"ok": True, "msg": msg, "estado": build_estado(cur)})
     finally:
         conn.rollback()
 
@@ -554,7 +578,11 @@ def api_pedidos_crear():
             tot_pares = int(cur.fetchone()["tot"])
             conn.commit()
             suf = "es" if tot_pares > 1 else ""
-            return jsonify({"ok": True, "msg": f"Calzado añadido al Pedido #{ped_id} ({tot_pares} par{suf} en total)."})
+            return jsonify({
+                "ok": True,
+                "msg": f"Calzado añadido al Pedido #{ped_id} ({tot_pares} par{suf} en total).",
+                "estado": build_estado(cur),
+            })
     finally:
         conn.rollback()
 
@@ -619,7 +647,7 @@ def api_pedido_item_patch(id, item_id):
                 cur.execute("UPDATE pedido_items SET cantidad = cantidad + %s WHERE id_item = %s", (delta, item_id))
 
             conn.commit()
-            return jsonify({"ok": True, "msg": msg})
+            return jsonify({"ok": True, "msg": msg, "estado": build_estado(cur)})
     finally:
         conn.rollback()
 
@@ -655,7 +683,7 @@ def api_pedido_item_listo(id, item_id):
                     (id,),
                 )
             conn.commit()
-        return jsonify({"ok": True})
+            return jsonify({"ok": True, "estado": build_estado(cur)})
     finally:
         conn.rollback()
 
@@ -668,7 +696,7 @@ def api_pedido_todo_listo(id):
             cur.execute("UPDATE pedido_items SET estado = 'Listo' WHERE id_pedido = %s", (id,))
             cur.execute("UPDATE pedidos_bodega SET estado = 'Listo', fecha_listo = UTC_TIMESTAMP() WHERE id_pedido = %s", (id,))
             conn.commit()
-        return jsonify({"ok": True})
+            return jsonify({"ok": True, "estado": build_estado(cur)})
     finally:
         conn.rollback()
 
@@ -690,7 +718,11 @@ def api_pedido_cancelar(id):
                 tot_dev += c
             cur.execute("DELETE FROM pedidos_bodega WHERE id_pedido = %s", (id,))
             conn.commit()
-            return jsonify({"ok": True, "msg": f"Pedido #{id} cancelado. Se devolvieron {tot_dev} par(es) al stock disponible."})
+            return jsonify({
+                "ok": True,
+                "msg": f"Pedido #{id} cancelado. Se devolvieron {tot_dev} par(es) al stock disponible.",
+                "estado": build_estado(cur),
+            })
     finally:
         conn.rollback()
 
@@ -763,6 +795,7 @@ def api_pedido_vender(id):
                 "ok": True,
                 "folio": folio,
                 "msg": f"Venta registrada a nombre de {v_nombre} ({tot_pares} par{suf}). Folio: {folio}",
+                "estado": build_estado(cur),
             })
     finally:
         conn.rollback()
@@ -794,6 +827,7 @@ def api_inventario_agregar():
             return jsonify({
                 "ok": True,
                 "msg": f"Se agregaron +{cant} pares al modelo {p['modelo']} en talla {talla}. Existencia actual: {nuevo}",
+                "estado": build_estado(cur),
             })
     finally:
         conn.rollback()
@@ -828,7 +862,11 @@ def api_productos_crear():
                     (sku, t, st_base),
                 )
             conn.commit()
-            return jsonify({"ok": True, "msg": f"Nuevo modelo registrado: {mod} ({sku}) con segmento {seg}."})
+            return jsonify({
+                "ok": True,
+                "msg": f"Nuevo modelo registrado: {mod} ({sku}) con segmento {seg}.",
+                "estado": build_estado(cur),
+            })
     finally:
         conn.rollback()
 
@@ -845,7 +883,11 @@ def api_productos_editar(sku):
                 (data.get("mod"), data.get("cat"), data.get("seg"), float(data.get("pr") or 0), data.get("loc"), sku),
             )
             conn.commit()
-            return jsonify({"ok": True, "msg": f"Producto SKU {sku} actualizado exitosamente."})
+            return jsonify({
+                "ok": True,
+                "msg": f"Producto SKU {sku} actualizado exitosamente.",
+                "estado": build_estado(cur),
+            })
     finally:
         conn.rollback()
 
@@ -860,7 +902,11 @@ def api_productos_eliminar(sku):
             cur.execute("UPDATE productos SET activo = 0 WHERE sku = %s", (sku,))
             conn.commit()
             mod = p["modelo"] if p else sku
-            return jsonify({"ok": True, "msg": f"Calzado {mod} eliminado del catálogo."})
+            return jsonify({
+                "ok": True,
+                "msg": f"Calzado {mod} eliminado del catálogo.",
+                "estado": build_estado(cur),
+            })
     finally:
         conn.rollback()
 
@@ -890,7 +936,11 @@ def api_usuarios_crear():
                 (usr, generate_password_hash(pwd), nom, rol, rfc, cor, mx + 1 if rol == "vendedor" else 0),
             )
             conn.commit()
-            return jsonify({"ok": True, "msg": f"Empleado {nom} registrado exitosamente como {rol}."})
+            return jsonify({
+                "ok": True,
+                "msg": f"Empleado {nom} registrado exitosamente como {rol}.",
+                "estado": build_estado(cur),
+            })
     finally:
         conn.rollback()
 
@@ -917,7 +967,11 @@ def api_usuarios_editar(id):
                     (data.get("n"), data.get("dni_rfc"), data.get("correo"), data.get("rol"), id),
                 )
             conn.commit()
-            return jsonify({"ok": True, "msg": f"Datos del usuario {u['username']} actualizados."})
+            return jsonify({
+                "ok": True,
+                "msg": f"Datos del usuario {u['username']} actualizados.",
+                "estado": build_estado(cur),
+            })
     finally:
         conn.rollback()
 
@@ -935,7 +989,11 @@ def api_usuarios_toggle(id):
             cur.execute("UPDATE usuarios SET activo = %s WHERE id_usuario = %s", (nuevo, id))
             conn.commit()
             est_txt = "Activo" if nuevo else "Inactivo"
-            return jsonify({"ok": True, "msg": f"Usuario {u['username']} marcado como {est_txt}."})
+            return jsonify({
+                "ok": True,
+                "msg": f"Usuario {u['username']} marcado como {est_txt}.",
+                "estado": build_estado(cur),
+            })
     finally:
         conn.rollback()
 
@@ -956,7 +1014,11 @@ def api_proveedores_crear():
                 (nom, con, data.get("telefono") or "N/D", data.get("correo") or "N/D", data.get("categoria_calzado") or "General"),
             )
             conn.commit()
-            return jsonify({"ok": True, "msg": f"Proveedor '{nom}' agregado correctamente."})
+            return jsonify({
+                "ok": True,
+                "msg": f"Proveedor '{nom}' agregado correctamente.",
+                "estado": build_estado(cur),
+            })
     finally:
         conn.rollback()
 
@@ -968,9 +1030,10 @@ def api_proveedores_eliminar(id):
         with conn.cursor() as cur:
             cur.execute("UPDATE proveedores SET activo = 0 WHERE id_proveedor = %s", (id,))
             conn.commit()
-            return jsonify({"ok": True, "msg": "Proveedor eliminado."})
+            return jsonify({"ok": True, "msg": "Proveedor eliminado.", "estado": build_estado(cur)})
     finally:
         conn.rollback()
+
 
 @app.route("/api/demo/reset", methods=["POST"])
 def api_demo_reset():
@@ -983,7 +1046,11 @@ def api_demo_reset():
             cur.execute("SET FOREIGN_KEY_CHECKS = 1")
             _exec_schema_sql(cur)
             conn.commit()
-            return jsonify({"ok": True, "msg": "Sistema restablecido con datos demo iniciales."})
+            return jsonify({
+                "ok": True,
+                "msg": "Sistema restablecido con datos demo iniciales.",
+                "estado": build_estado(cur),
+            })
     finally:
         conn.rollback()
 
