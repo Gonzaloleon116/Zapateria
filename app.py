@@ -1,14 +1,20 @@
 import os
+import ssl
 from datetime import datetime, timezone
-from decimal import Decimal
+from zoneinfo import ZoneInfo
 from flask import Flask, jsonify, request, send_from_directory
 import pymysql
 from werkzeug.security import check_password_hash, generate_password_hash
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TALLAS = ["24", "24.5", "25", "25.5", "26", "26.5", "27", "27.5", "28"]
+MX_TZ = ZoneInfo("America/Mexico_City")
 
 app = Flask(__name__)
+
+
+def now_mx():
+    return datetime.now(MX_TZ)
 
 
 def get_db():
@@ -18,13 +24,16 @@ def get_db():
         "port": int(os.getenv("DB_PORT", "3306")),
         "user": os.getenv("DB_USER", "root"),
         "password": os.getenv("DB_PASSWORD", ""),
-        "database": os.getenv("DB_NAME", "sgcic"),
+        "database": os.getenv("DB_NAME", "defaultdb"),
         "charset": "utf8mb4",
         "cursorclass": pymysql.cursors.DictCursor,
         "autocommit": False,
     }
     if os.getenv("DB_SSL", "false").lower() == "true":
-        kwargs["ssl"] = {"ssl": {}}
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        kwargs["ssl"] = ctx
     return pymysql.connect(**kwargs)
 
 
@@ -94,9 +103,9 @@ def _asignar_siguiente_cliente(cur, v_id, v_nombre):
         return None
     cur.execute("SELECT COALESCE(MAX(orden_turno), 0) AS mx FROM usuarios WHERE rol = 'vendedor'")
     mx = cur.fetchone()["mx"]
-    now = datetime.utcnow()
-    esp_seg = max(0, int((now - cli["hora_llegada"]).total_seconds()))
-    hora_str = datetime.now().strftime("%I:%M %p").lstrip("0")
+    now_utc = datetime.utcnow()
+    esp_seg = max(0, int((now_utc - cli["hora_llegada"]).total_seconds()))
+    hora_str = now_mx().strftime("%I:%M %p").lstrip("0")
     cur.execute(
         "UPDATE clientes_espera SET estado = 'Atendido', vendedor_asignado = %s, "
         "tiempo_espera_seg = %s, hora_atencion_str = %s WHERE id_cliente = %s",
@@ -349,7 +358,7 @@ def api_checkin():
             )
             v = cur.fetchone()
             if v:
-                hora_str = datetime.now().strftime("%I:%M %p").lstrip("0")
+                hora_str = now_mx().strftime("%I:%M %p").lstrip("0")
                 cur.execute(
                     "INSERT INTO clientes_espera (hora_llegada, estado, vendedor_asignado, tiempo_espera_seg, hora_atencion_str) "
                     "VALUES (UTC_TIMESTAMP(), 'Atendido', %s, 0, %s)",
@@ -693,7 +702,7 @@ def api_pedido_vender(id):
             desc = float(data["desc"]) if "desc" in data and data["desc"] is not None else float(ped["descuento_global"] or 0)
             desc = max(0.0, min(total_sub, desc))
 
-            now = datetime.now()
+            now = now_mx()
             cur.execute("SELECT COUNT(*) AS cnt FROM ventas")
             seq = int(cur.fetchone()["cnt"]) + 1
             folio = f"TK-{now.strftime('%y%m%d')}-{seq:04d}"
