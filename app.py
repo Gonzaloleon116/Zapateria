@@ -1,9 +1,11 @@
 import os
 import ssl
+import threading
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 from flask import Flask, jsonify, request, send_from_directory
 import pymysql
+from pymysql.constants import CLIENT
 from werkzeug.security import check_password_hash, generate_password_hash
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -11,6 +13,7 @@ TALLAS = ["24", "24.5", "25", "25.5", "26", "26.5", "27", "27.5", "28"]
 MX_TZ = ZoneInfo("America/Mexico_City")
 
 app = Flask(__name__)
+_local = threading.local()
 
 
 def now_mx():
@@ -18,7 +21,17 @@ def now_mx():
 
 
 def get_db():
-    """Create a new PyMySQL connection using environment variables."""
+    """Reutiliza la conexión SSL abierta en el hilo actual."""
+    conn = getattr(_local, "conn", None)
+    if conn is not None:
+        try:
+            conn.ping(reconnect=True)
+            return conn
+        except Exception:
+            try:
+                conn.close()
+            except Exception:
+                pass
     kwargs = {
         "host": os.getenv("DB_HOST", "127.0.0.1"),
         "port": int(os.getenv("DB_PORT", "3306")),
@@ -28,13 +41,16 @@ def get_db():
         "charset": "utf8mb4",
         "cursorclass": pymysql.cursors.DictCursor,
         "autocommit": False,
+        "client_flag": CLIENT.MULTI_STATEMENTS,
     }
     if os.getenv("DB_SSL", "false").lower() == "true":
         ctx = ssl.create_default_context()
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
         kwargs["ssl"] = ctx
-    return pymysql.connect(**kwargs)
+    conn = pymysql.connect(**kwargs)
+    _local.conn = conn
+    return conn
 
 
 def _exec_schema_sql(cur):
@@ -68,6 +84,7 @@ def init_db():
                     conn.commit()
     finally:
         conn.close()
+        _local.conn = None
 
 
 def _dt_to_ms(dt):
@@ -151,7 +168,7 @@ def api_login():
                 },
             })
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/estado", methods=["GET"])
@@ -325,7 +342,7 @@ def api_estado():
                 "proveedores": proveedores,
             })
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/config", methods=["POST"])
@@ -343,7 +360,7 @@ def api_config():
             conn.commit()
         return jsonify({"ok": True})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/checkin", methods=["POST"])
@@ -379,7 +396,7 @@ def api_checkin():
                 conn.commit()
                 return jsonify({"ok": True, "msg": f"Cliente #{cid} registrado en fila de espera (todos los vendedores están ocupados o en descanso)."})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/asignar", methods=["POST"])
@@ -401,7 +418,7 @@ def api_asignar():
             conn.commit()
             return jsonify({"ok": True, "msg": f"{v['nombre_completo']} asignado manualmente al cliente {cid}."})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/vendedores/<int:id>/estado", methods=["POST"])
@@ -429,7 +446,7 @@ def api_vendedor_estado(id):
             conn.commit()
             return jsonify({"ok": True, "msg": msg})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/vendedores/<int:id>/finalizar", methods=["POST"])
@@ -451,7 +468,7 @@ def api_vendedor_finalizar(id):
             conn.commit()
             return jsonify({"ok": True, "msg": msg})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/pedidos", methods=["POST"])
@@ -539,7 +556,7 @@ def api_pedidos_crear():
             suf = "es" if tot_pares > 1 else ""
             return jsonify({"ok": True, "msg": f"Calzado añadido al Pedido #{ped_id} ({tot_pares} par{suf} en total)."})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/pedidos/<int:id>/items/<int:item_id>", methods=["PATCH"])
@@ -604,7 +621,7 @@ def api_pedido_item_patch(id, item_id):
             conn.commit()
             return jsonify({"ok": True, "msg": msg})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/pedidos/<int:id>/descuento", methods=["PATCH"])
@@ -622,7 +639,7 @@ def api_pedido_descuento(id):
             conn.commit()
         return jsonify({"ok": True, "desc": desc})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/pedidos/<int:id>/items/<int:item_id>/listo", methods=["POST"])
@@ -640,7 +657,7 @@ def api_pedido_item_listo(id, item_id):
             conn.commit()
         return jsonify({"ok": True})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/pedidos/<int:id>/listo", methods=["POST"])
@@ -653,7 +670,7 @@ def api_pedido_todo_listo(id):
             conn.commit()
         return jsonify({"ok": True})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/pedidos/<int:id>/cancelar", methods=["POST"])
@@ -675,7 +692,7 @@ def api_pedido_cancelar(id):
             conn.commit()
             return jsonify({"ok": True, "msg": f"Pedido #{id} cancelado. Se devolvieron {tot_dev} par(es) al stock disponible."})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/pedidos/<int:id>/vender", methods=["POST"])
@@ -748,7 +765,7 @@ def api_pedido_vender(id):
                 "msg": f"Venta registrada a nombre de {v_nombre} ({tot_pares} par{suf}). Folio: {folio}",
             })
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/inventario/agregar", methods=["POST"])
@@ -779,7 +796,7 @@ def api_inventario_agregar():
                 "msg": f"Se agregaron +{cant} pares al modelo {p['modelo']} en talla {talla}. Existencia actual: {nuevo}",
             })
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/productos", methods=["POST"])
@@ -813,7 +830,7 @@ def api_productos_crear():
             conn.commit()
             return jsonify({"ok": True, "msg": f"Nuevo modelo registrado: {mod} ({sku}) con segmento {seg}."})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/productos/<sku>", methods=["PUT"])
@@ -830,7 +847,7 @@ def api_productos_editar(sku):
             conn.commit()
             return jsonify({"ok": True, "msg": f"Producto SKU {sku} actualizado exitosamente."})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/productos/<sku>", methods=["DELETE"])
@@ -845,7 +862,7 @@ def api_productos_eliminar(sku):
             mod = p["modelo"] if p else sku
             return jsonify({"ok": True, "msg": f"Calzado {mod} eliminado del catálogo."})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/usuarios", methods=["POST"])
@@ -875,7 +892,7 @@ def api_usuarios_crear():
             conn.commit()
             return jsonify({"ok": True, "msg": f"Empleado {nom} registrado exitosamente como {rol}."})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/usuarios/<int:id>", methods=["PUT"])
@@ -902,7 +919,7 @@ def api_usuarios_editar(id):
             conn.commit()
             return jsonify({"ok": True, "msg": f"Datos del usuario {u['username']} actualizados."})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/usuarios/<int:id>/toggle", methods=["PATCH"])
@@ -920,7 +937,7 @@ def api_usuarios_toggle(id):
             est_txt = "Activo" if nuevo else "Inactivo"
             return jsonify({"ok": True, "msg": f"Usuario {u['username']} marcado como {est_txt}."})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/proveedores", methods=["POST"])
@@ -941,7 +958,7 @@ def api_proveedores_crear():
             conn.commit()
             return jsonify({"ok": True, "msg": f"Proveedor '{nom}' agregado correctamente."})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 @app.route("/api/proveedores/<int:id>", methods=["DELETE"])
@@ -953,8 +970,7 @@ def api_proveedores_eliminar(id):
             conn.commit()
             return jsonify({"ok": True, "msg": "Proveedor eliminado."})
     finally:
-        conn.close()
-
+        conn.rollback()
 
 @app.route("/api/demo/reset", methods=["POST"])
 def api_demo_reset():
@@ -969,7 +985,7 @@ def api_demo_reset():
             conn.commit()
             return jsonify({"ok": True, "msg": "Sistema restablecido con datos demo iniciales."})
     finally:
-        conn.close()
+        conn.rollback()
 
 
 try:
