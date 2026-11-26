@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SGCIC · Zapatería 3 Hermanos (Villahermosa)</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f3f6fb;--sf:#fff;--tx:#14213d;--mu:#5b6b8a;--bd:#d9e1ee;--bl:#0b4fb3;--bl2:#e6eefb;--or:#f47b20;--ok:#15803d;--okb:#e3f5e8;--wa:#b45309;--wab:#fff0d9;--er:#b91c1c;--erb:#fde7e7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0d1526;--sf:#16203a;--tx:#e8eefb;--mu:#98a7c6;--bd:#2a3858;--bl:#6ea2ff;--bl2:#1c2c52;--or:#ff9a4d;--ok:#5fd68a;--okb:#143324;--wa:#ffc277;--wab:#3a2a12;--er:#ff8f8f;--erb:#3d1b1b}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0d1526;--sf:#16203a;--tx:#e8eefb;--mu:#98a7c6;--bd:#2a3858;--bl:#6ea2ff;--bl2:#1c2c52;--or:#ff9a4d;--ok:#5fd68a;--okb:#143324;--wa:#ffc277;--wab:#3a2a12;--er:#ff8f8f;--erb:#3d1b1b}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+header{background:#0b3a85;color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header b{font-size:19px;letter-spacing:.2px}header small{opacity:.8}
+header .sp{flex:1}
+nav{display:flex;gap:4px;overflow-x:auto;background:var(--sf);border-bottom:1px solid var(--bd);padding:0 8px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+nav button{border:0;background:none;color:var(--mu);padding:13px 14px;font:inherit;font-weight:600;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav button.on{color:var(--bl);border-color:var(--or)}
+main{max-width:1040px;margin:0 auto;padding:16px}
+h2{margin:4px 0 12px;font-size:20px}h3{margin:0 0 8px;font-size:16px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:14px;transition:outline .3s ease}
+.row{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:8px 0;border-top:1px solid var(--bd)}
+.row:first-of-type{border-top:0}
+.btn{border:0;border-radius:8px;padding:9px 14px;font:inherit;font-weight:600;cursor:pointer;background:var(--bl);color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.or{background:var(--or);color:#1b1000}.btn.gh{background:var(--bl2);color:var(--bl)}.btn.sm{padding:6px 10px;font-size:13px}
+.btn.er{background:var(--erb);color:var(--er)}.btn.ok{background:var(--okb);color:var(--ok)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:700}
+.t-Disponible,.t-Listo,.t-Entregado,.t-Activo{background:var(--okb);color:var(--ok)}
+.t-Atendiendo,.t-Preparación{background:var(--bl2);color:var(--bl)}
+.t-Descanso,.t-Inactivo{background:var(--wab);color:var(--wa)}
+.t-Cancelado,.t-Agotado{background:var(--erb);color:var(--er)}
+select,input{font:inherit;padding:8px;border-radius:8px;border:1px solid var(--bd);background:var(--sf);color:var(--tx);max-width:100%}
+.alert{background:var(--erb);color:var(--er);border:2px solid var(--er);border-radius:12px;padding:12px;margin-bottom:14px;font-weight:700;animation:bl 1s infinite alternate}
+@keyframes bl{to{opacity:.55}}@media (prefers-reduced-motion:reduce){.alert{animation:none}}
+.ok{background:var(--okb);color:var(--ok);border-radius:12px;padding:10px;margin-bottom:14px;font-weight:600}
+.mu{color:var(--mu);font-size:13px}.big{font-size:26px;font-weight:700}
+.sizes{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.sz{border:1px solid var(--bd);background:var(--sf);color:var(--tx);border-radius:8px;padding:5px 9px;cursor:pointer;font:inherit;font-size:13px}
+.sz.on{background:var(--bl);color:#fff;border-color:var(--bl)}
+.sz.out{border-color:var(--er);color:var(--er);background:var(--erb)}
+.loc{background:var(--wab);color:var(--wa);border-radius:8px;padding:6px 8px;font-size:13px;font-weight:600}
+.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%}td,th{padding:8px;border-bottom:1px solid var(--bd);text-align:left}
+.bars{display:flex;gap:10px;align-items:flex-end;height:120px}.bars div{flex:1;background:var(--bl);border-radius:6px 6px 0 0;min-height:4px;position:relative}
+.bars span{position:absolute;bottom:100%;left:0;right:0;text-align:center;font-size:11px}
+.lab{display:flex;gap:10px}.lab div{flex:1;text-align:center;font-size:12px;color:var(--mu)}
+.pill{padding:4px 10px;border-radius:99px;font-size:12px;font-weight:600;border:1px solid var(--bd);cursor:pointer;background:var(--sf);color:var(--mu)}
+.pill.on{background:var(--bl);color:#fff;border-color:var(--bl)}
+
+.tag-seg-Hombre{background:var(--bl2);color:var(--bl)}
+.tag-seg-Mujer{background:#fce7f3;color:#be185d}
+.tag-seg-Niño,.tag-seg-Nino{background:var(--okb);color:var(--ok)}
+@media (prefers-color-scheme:dark){
+ :root:not([data-theme="light"]) .tag-seg-Mujer{background:#831843;color:#fce7f3}
+}
+:root[data-theme="dark"] .tag-seg-Mujer{background:#831843;color:#fce7f3}
+
+.alt-box{background:var(--wab);border:1px solid var(--wa);border-radius:8px;padding:8px 10px;margin:8px 0;font-size:13px}
+
+/* Modal estilizado */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px)}
+.modal-box{background:var(--sf);color:var(--tx);border:1px solid var(--bd);border-radius:14px;max-width:540px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 12px 32px rgba(0,0,0,0.3);padding:20px}
+.ticket-paper{background:#fff;color:#111;font-family:"Courier New",Courier,monospace;padding:16px;border:1px dashed #aaa;border-radius:6px;font-size:13px;line-height:1.4}
+.ticket-paper h4{margin:0 0 4px;text-align:center;font-size:16px}
+.ticket-hr{border:0;border-top:1px dashed #999;margin:8px 0}
+
+@media print {
+ body * { visibility: hidden !important; }
+ #modal-overlay, #modal-overlay * { visibility: visible !important; }
+ #modal-overlay { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; background: #fff !important; color: #000 !important; padding: 0 !important; display: block !important; }
+ .modal-box { border: 0 !important; box-shadow: none !important; max-width: 100% !important; padding: 0 !important; }
+ .no-print { display: none !important; }
+}
+</style>
+</head>
+<body>
+<header>
+<div><b>SGCIC</b><br><small>Zapatería 3 Hermanos · Villahermosa, Tab.</small></div>
+<div class="sp"></div>
+<span id="who" class="mu" style="color:#fff"></span>
+<label id="cfg1" class="mu" style="color:#fff">Temporada <select id="temp"><option>Regular</option><option>Alta</option></select></label>
+<label id="cfg2" class="mu" style="color:#fff">Alerta espera <select id="umbral"><option value="180">3 min</option><option value="300">5 min</option><option value="15">15 s (demo)</option></select></label>
+<button class="btn sm or" id="out" onclick="logout()">Cerrar sesión</button>
+</header>
+<nav id="nav"></nav>
+<main id="app"></main>
+
+<div id="modal-overlay"></div>
+
+<script>
+var TALLAS=[24,24.5,25,25.5,26,26.5,27,27.5,28];
+
+function getInitialState(){
+ var initialUsers=[
+  {id:0,u:"admin",p:"admin123",rol:"admin",n:"Administrador",dni_rfc:"ADM-850101-HA1",correo:"admin@zapateria3h.mx",activo:true}
+ ].concat([1,2,3,4,5].map(function(i){
+  return {id:i,u:"vendedor"+i,p:"1234",rol:"vendedor",n:"Vendedor 0"+i,dni_rfc:"VEN-950"+i+"12-MX"+i,correo:"vendedor"+i+"@zapateria3h.mx",activo:true};
+ }));
+
+ var initialVend=[1,2,3,4,5].map(function(i){
+  return {id:i,n:"Vendedor 0"+i,st:"Disponible",cli:null,pares:0,monto:0,com:0};
+ });
+
+ var initialProd=[
+  ["001234","Tenis casual azul","Casual","Hombre",649,"Pasillo B · Estante 03 · Sección 2"],
+  ["001235","Tenis deportivo blanco","Deportivo","Hombre",899,"Pasillo B · Estante 03 · Sección 2"],
+  ["001236","Tenis negro running","Deportivo","Hombre",799,"Pasillo A · Estante 01 · Sección 1"],
+  ["001237","Zapatilla rosa","Casual","Mujer",579,"Pasillo C · Estante 02 · Sección 4"],
+  ["001240","Zapato formal café","Formal","Hombre",1099,"Pasillo D · Estante 05 · Sección 3"],
+  ["001241","Bota vaquera","Bota","Hombre",1399,"Pasillo E · Estante 01 · Sección 2"],
+  ["001242","Sandalia de piel","Sandalia","Mujer",499,"Pasillo C · Estante 04 · Sección 1"],
+  ["001243","Tenis infantil luces","Deportivo","Niño",489,"Pasillo A · Estante 02 · Sección 3"],
+  ["001244","Zapato escolar negro","Formal","Niño",549,"Pasillo A · Estante 03 · Sección 1"],
+  ["001245","Tenis urbano blanco dama","Casual","Mujer",699,"Pasillo C · Estante 01 · Sección 2"]
+ ].map(function(p,i){
+  var st={};
+  TALLAS.forEach(function(t,j){st[t]=(i*3+j*2)%5});
+  return {sku:p[0],mod:p[1],cat:p[2],seg:p[3],pr:p[4],loc:p[5],st:st};
+ });
+
+ var initialProv=[
+  {id:1,nombre:"Calzados del Sureste S.A. de C.V.",contacto:"Lic. Roberto Morales",telefono:"993 123 4567",correo:"ventas@calzadosureste.mx",categoria_calzado:"Casual y Escolar"},
+  {id:2,nombre:"Distribuidora de Calzado Deportivo León",contacto:"Ing. Sofía Carrillo",telefono:"477 987 6543",correo:"contacto@deportivoleon.com",categoria_calzado:"Deportivo y Running"}
+ ];
+
+ return {
+  tab:0,sel:{},cantSel:{},msg:"",
+  users:initialUsers,vend:initialVend,order:[1,2,3,4,5],
+  cola:[],cid:0,pedidos:[],pid:0,ventas:[],atendidos:[],
+  prod:initialProd,proveedores:initialProv,provId:2,
+  filterSeg:"Todos",filterFecIni:"",filterFecFin:"",
+  q:"",qBod:"",filterSegBod:"Todos",
+  act:null,user:null
+ };
+}
+
+var S=getInitialState();
+var $=function(i){return document.getElementById(i)};
+function com(){return $("temp").value==="Alta"?25:15}
+function money(n){return "$"+n.toLocaleString("es-MX",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function fmt(s){return Math.floor(s/60)+":"+("0"+(s%60)).slice(-2)}
+
+function inferSegment(p){
+ var m = ((p.mod||'') + ' ' + (p.cat||'')).toLowerCase();
+ if(m.indexOf("zapatilla")>-1 || m.indexOf("sandalia")>-1 || m.indexOf("dama")>-1 || m.indexOf("mujer")>-1){
+  return "Mujer";
+ }
+ if(m.indexOf("infantil")>-1 || m.indexOf("niño")>-1 || m.indexOf("nina")>-1 || m.indexOf("niña")>-1 || m.indexOf("escolar")>-1 || m.indexOf("luces")>-1){
+  return "Niño";
+ }
+ return "Hombre";
+}
+function tagSeg(s){
+ var seg = s || 'Hombre';
+ var cls = 'tag-seg-' + (seg==='Niño'?'Niño':seg);
+ return '<span class="tag '+cls+'">'+esc(seg)+'</span>';
+}
+
+function tag(s){return '<span class="tag t-'+String(s).replace("En preparación","Preparación")+'">'+s+'</span>'}
+function vById(id){return S.vend.filter(function(v){return v.id===id})[0]}
+function say(m){S.msg=m;render()}
+
+/* 4 pestañas por rol */
+function getTabs(){
+ if(!S.user)return[];
+ if(S.user.rol==="admin"){
+  return ["Piso de ventas","Inventario","Bodega","Administración"];
+ }
+ return ["Piso de ventas","Inventario","Mis pedidos","Mis comisiones"];
+}
+
+/* Sincronización de Vendedores activos */
+function syncVendedores(){
+ var activeUsers=S.users.filter(function(u){return u.rol==="vendedor"&&u.activo});
+ var activeIds=activeUsers.map(function(u){return u.id});
+ activeUsers.forEach(function(u){
+  var ex=vById(u.id);
+  if(!ex){
+   S.vend.push({id:u.id,n:u.n,st:"Disponible",cli:null,pares:0,monto:0,com:0});
+  }else{
+   ex.n=u.n;
+  }
+ });
+ S.order=S.order.filter(function(id){return activeIds.indexOf(id)>=0});
+ activeIds.forEach(function(id){
+  if(S.order.indexOf(id)<0)S.order.push(id);
+ });
+}
+
+function can(id){return S.user&&S.user.rol==="admin"||(S.user&&S.user.id===id)}
+
+/* Comunicación con Backend Flask + MySQL */
+function saveState(){}
+
+async function api(method,url,body){
+ try{
+  var opts={method:method,headers:{"Content-Type":"application/json"}};
+  if(body!==undefined)opts.body=JSON.stringify(body);
+  var res=await fetch(url,opts);
+  var data={};
+  try{data=await res.json()}catch(e){}
+  S.offline=false;
+  if(!res.ok){
+   return {ok:false,msg:data.msg||data.error||("Error del servidor ("+res.status+")"),status:res.status};
+  }
+  return data;
+ }catch(e){
+  S.offline=true;
+  render();
+  return {ok:false,msg:"Sin conexión con el servidor."};
+ }
+}
+
+async function syncEstado(silent){
+ try{
+  var res=await fetch("/api/estado");
+  if(!res.ok)throw new Error("HTTP "+res.status);
+  var data=await res.json();
+  S.offline=false;
+  if(data.config){
+   var ae=document.activeElement;
+   if($("temp")&&ae!==$("temp"))$("temp").value=data.config.temp||"Regular";
+   if($("umbral")&&ae!==$("umbral"))$("umbral").value=String(data.config.umbral||"180");
+  }
+  S.users=data.users||[];
+  S.vend=data.vend||[];
+  S.order=data.order||[];
+  S.cola=data.cola||[];
+  S.atendidos=data.atendidos||[];
+  S.pedidos=data.pedidos||[];
+  S.ventas=data.ventas||[];
+  S.prod=data.prod||[];
+  S.proveedores=data.proveedores||[];
+  if(S.user){
+   var me=S.users.filter(function(u){return u.id===S.user.id})[0];
+   if(me){
+    if(!me.activo){logout();return}
+    S.user=me;
+    try{sessionStorage.setItem("sgcic_user",JSON.stringify(me))}catch(e){}
+   }
+  }
+  render();
+ }catch(e){
+  S.offline=true;
+  if(!silent)say("No se pudo sincronizar con el servidor.");
+  else render();
+ }
+}
+
+/* Modales Reutilizables */
+function closeModal(){
+ var m=$("modal-overlay");
+ m.style.display="none";
+ m.innerHTML="";
+}
+function openConfirmModal(title,msg,onAccept,isDanger){
+ var m=$("modal-overlay");
+ m.style.display="flex";
+ m.innerHTML='<div class="modal-box" style="max-width:440px"><h3 style="margin-top:0">'+esc(title)+'</h3><p>'+esc(msg)+'</p><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px"><button class="btn gh sm" onclick="closeModal()">Cancelar</button><button class="btn sm '+(isDanger?'er':'or')+'" id="modal-ok-btn">Aceptar</button></div></div>';
+ $("modal-ok-btn").onclick=function(){closeModal();if(onAccept)onAccept()};
+}
+
+function reiniciarDemo(){
+ openConfirmModal("Reiniciar datos demo","¿Estás seguro de que deseas restablecer todos los datos del sistema a los valores iniciales de fábrica?",async function(){
+  var r=await api("POST","/api/demo/reset");
+  if(!r.ok)return say(r.msg);
+  S.tab=0;S.q="";S.filterSeg="Todos";S.act=null;
+  await syncEstado();
+  say(r.msg||"Sistema restablecido con datos demo iniciales.");
+ },true);
+}
+
+/* Asignación automática de clientes (Tablet Piso) */
+async function checkin(){
+ var r=await api("POST","/api/checkin");
+ await syncEstado();
+ if(r.msg)say(r.msg);
+}
+
+async function asignar(){
+ if(!S.cola.length)return say("No hay clientes en fila de espera.");
+ var r=await api("POST","/api/asignar");
+ await syncEstado();
+ if(r.msg)say(r.msg);
+}
+
+async function setSt(id,st){
+ var r=await api("POST","/api/vendedores/"+id+"/estado",{st:st});
+ await syncEstado();
+ if(r.msg)say(r.msg);
+}
+
+async function fin(id){
+ if(S.act===id)S.act=null;
+ var r=await api("POST","/api/vendedores/"+id+"/finalizar");
+ await syncEstado();
+ if(r.msg)say(r.msg);
+}
+
+/* Pedidos consolidados con apartado de stock */
+async function pedir(sku){
+ var a=S.act,t=S.sel[sku];
+ var v=a?vById(a):null;
+ if(!a||!v||!v.cli)return say("Primero ve a Piso de ventas: asigna un cliente o selecciona al vendedor que atiende.");
+ if(!t)return say("Elige una talla antes de crear el pedido.");
+ var cant=Math.max(1,parseInt(S.cantSel[sku],10)||1);
+ var r=await api("POST","/api/pedidos",{vId:a,sku:sku,t:String(t),cant:cant});
+ if(!r.ok)return say(r.msg);
+ S.sel[sku]=null;S.cantSel[sku]=1;
+ await syncEstado();
+ if(r.msg)say(r.msg);
+}
+
+async function marcarItemListo(pedidoId,itemId){
+ var r=await api("POST","/api/pedidos/"+pedidoId+"/items/"+itemId+"/listo");
+ if(!r.ok&&r.msg)return say(r.msg);
+ await syncEstado();
+}
+
+async function marcarPedidoTodoListo(pedidoId){
+ var r=await api("POST","/api/pedidos/"+pedidoId+"/listo");
+ if(!r.ok&&r.msg)return say(r.msg);
+ await syncEstado();
+}
+
+async function ajustarCantItem(pedidoId,itemId,delta){
+ var r=await api("PATCH","/api/pedidos/"+pedidoId+"/items/"+itemId,{delta:delta});
+ if(!r.ok)return say(r.msg);
+ await syncEstado();
+ if(r.msg)say(r.msg);
+}
+
+async function quitarItemPedido(pedidoId,itemId){
+ var r=await api("PATCH","/api/pedidos/"+pedidoId+"/items/"+itemId,{action:"quitar"});
+ if(!r.ok)return say(r.msg);
+ await syncEstado();
+ if(r.msg)say(r.msg);
+}
+
+var _descTimer=null;
+function actualizarDescPedido(pedidoId,val){
+ var ped=S.pedidos.filter(function(x){return x.id===pedidoId})[0];
+ if(!ped)return;
+ var sub=ped.items.reduce(function(s,it){return s+(it.cant||1)*(it.pr||0)},0);
+ var d=Math.max(0,parseFloat(val)||0);
+ if(d>sub)d=sub;
+ ped.desc=d;
+ var totEl=$("tot_pagar_"+pedidoId);
+ if(totEl)totEl.textContent=money(sub-d);
+ clearTimeout(_descTimer);
+ _descTimer=setTimeout(function(){
+  api("PATCH","/api/pedidos/"+pedidoId+"/descuento",{desc:d});
+ },400);
+}
+
+function cancelarPedido(id){
+ openConfirmModal("Cancelar pedido #"+id,"¿Deseas devolver todos los pares de este pedido al inventario y cancelarlo?",async function(){
+  var r=await api("POST","/api/pedidos/"+id+"/cancelar");
+  if(!r.ok)return say(r.msg);
+  await syncEstado();
+  if(r.msg)say(r.msg);
+ },true);
+}
+
+/* Venta unificada y emisión de ticket consolidado */
+async function venderPedido(id){
+ var p=S.pedidos.filter(function(x){return x.id===id})[0];
+ var descInput=$("desc_"+id);
+ var desc=descInput?Math.max(0,parseFloat(descInput.value)||0):(p?Math.max(0,parseFloat(p.desc)||0):0);
+ var r=await api("POST","/api/pedidos/"+id+"/vender",{desc:desc});
+ if(!r.ok)return say(r.msg);
+ await syncEstado();
+ if(r.msg)say(r.msg);
+ if(r.folio)verTicket(r.folio);
+}
+
+function verTicket(folioOrVenta){
+ var folio=typeof folioOrVenta==="string"?folioOrVenta:(folioOrVenta&&folioOrVenta.folio);
+ if(!folio)return;
+ var lineas=S.ventas.filter(function(x){return x.folio===folio});
+ if(!lineas.length&&typeof folioOrVenta==="object"&&folioOrVenta){
+  lineas=[folioOrVenta];
+ }
+ if(!lineas.length)return;
+ var head=lineas[0];
+ var subGen=lineas.reduce(function(a,x){return a+(x.subtotal||0)},0);
+ var descGen=lineas.reduce(function(a,x){return a+(x.descuento||0)},0);
+ var totGen=lineas.reduce(function(a,x){return a+(x.tot||0)},0);
+ var paresGen=lineas.reduce(function(a,x){return a+(x.cant||1)},0);
+
+ var itemsHtml=lineas.map(function(x){
+  return '<div style="margin-bottom:6px">' +
+   '<div><b>'+esc(x.mod)+'</b></div>' +
+   '<div style="display:flex;justify-content:space-between;font-size:12px">' +
+    '<span>SKU '+esc(x.sku)+' · T.'+x.t+' · '+x.cant+' x '+money(x.precioUnit)+'</span>' +
+    '<span>'+money(x.subtotal)+'</span>' +
+   '</div>' +
+  '</div>';
+ }).join("");
+
+ var m=$("modal-overlay");
+ m.style.display="flex";
+ m.innerHTML=
+  '<div class="modal-box" style="max-width:410px">' +
+   '<div class="ticket-paper">' +
+    '<h4>ZAPATERÍA 3 HERMANOS</h4>' +
+    '<div style="text-align:center;font-size:11px">Av. Francisco I. Madero #649<br>Col. Centro, C.P. 86000<br>Villahermosa, Tabasco · RFC: ZTH-820412-TR1<br>Tel: (993) 314-5520</div>' +
+    '<hr class="ticket-hr">' +
+    '<div><b>FOLIO:</b> '+esc(head.folio)+'</div>' +
+    '<div><b>FECHA:</b> '+head.fechaISO+' '+head.hora+'</div>' +
+    '<div><b>VENDEDOR:</b> '+esc(head.v)+'</div>' +
+    '<hr class="ticket-hr">' +
+    itemsHtml +
+    '<hr class="ticket-hr">' +
+    '<div style="display:flex;justify-content:space-between"><span>Artículos ('+paresGen+' par'+(paresGen>1?'es':'')+'):</span><span>'+money(subGen)+'</span></div>' +
+    '<div style="display:flex;justify-content:space-between"><span>Descuento:</span><span>-'+money(descGen)+'</span></div>' +
+    '<div style="display:flex;justify-content:space-between;font-size:15px;font-weight:bold;margin-top:4px"><span>TOTAL PAGADO:</span><span>'+money(totGen)+'</span></div>' +
+    '<hr class="ticket-hr">' +
+    '<div style="text-align:center;font-size:11px;color:#555">¡Gracias por su compra!<br>Cambios válidos dentro de los primeros 15 días con empaque original.</div>' +
+   '</div>' +
+   '<div class="no-print" style="display:flex;justify-content:space-between;margin-top:14px;gap:8px">' +
+    '<button class="btn sm gh" onclick="closeModal()">Cerrar</button>' +
+    '<button class="btn sm or" onclick="window.print()">🖨️ Imprimir ticket</button>' +
+   '</div>' +
+  '</div>';
+}
+
+/* 2. ESCÁNER SKU SIN OCULTAR PRODUCTOS CON SCROLLINTOVIEW */
+function openEscanerModal(){
+ var m=$("modal-overlay");
+ m.style.display="flex";
+ m.innerHTML=
+  '<div class="modal-box" style="max-width:460px">' +
+   '<h3 style="margin-top:0">📷 Escanear código de barras / SKU</h3>' +
+   '<p class="mu">Selecciona un modelo o ingresa el código SKU:</p>' +
+   '<input id="scan_input" placeholder="Ej. 001235" style="width:100%;font-size:16px;font-weight:bold;letter-spacing:1px;margin-bottom:12px">' +
+   '<div style="max-height:180px;overflow-y:auto;border:1px solid var(--bd);border-radius:8px;padding:6px;margin-bottom:12px">' +
+    S.prod.map(function(p){
+     return '<div style="padding:6px;border-bottom:1px solid var(--bd);cursor:pointer;display:flex;justify-content:space-between" onclick="$(\'scan_input\').value=\''+p.sku+'\'"><span><b>'+p.sku+'</b> · '+esc(p.mod)+'</span><span class="mu">'+p.seg+'</span></div>';
+    }).join("") +
+   '</div>' +
+   '<div style="display:flex;justify-content:flex-end;gap:8px">' +
+    '<button class="btn gh sm" onclick="closeModal()">Cancelar</button>' +
+    '<button class="btn sm or" onclick="aplicarEscaneo()">Seleccionar calzado</button>' +
+   '</div>' +
+  '</div>';
+ $("scan_input").focus();
+}
+
+function aplicarEscaneo(){
+ var val=($("scan_input").value||"").trim();
+ if(!val)return;
+ var p=S.prod.filter(function(x){return x.sku===val})[0];
+ if(!p){alert("SKU no encontrado.");return}
+ 
+ // NO filtramos con S.q, mantenemos el catálogo visible completo
+ S.q="";
+ S.filterSeg="Todos";
+ var primerTalla=TALLAS.filter(function(t){return (p.st[t]||0)>0})[0]||TALLAS[0];
+ S.sel[p.sku]=primerTalla;
+ closeModal();
+ render();
+ 
+ // Desplazar suavemente hacia la tarjeta correspondiente
+ setTimeout(function(){
+  var card=$("card_"+p.sku);
+  if(card){
+   card.scrollIntoView({behavior:"smooth",block:"center"});
+   card.style.outline="3px solid var(--or)";
+   setTimeout(function(){card.style.outline=""},2500);
+  }
+ },50);
+ say("Calzado localizado: "+p.mod+" ("+p.sku+"). Talla "+primerTalla+" seleccionada.");
+}
+
+/* 2. SELECCIONAR ALTERNATIVA Y DESPLAZAR SIN FILTRAR */
+function seleccionarYDesplazar(sku,talla){
+ S.q="";
+ S.filterSeg="Todos";
+ S.sel[sku]=talla;
+ render();
+ setTimeout(function(){
+  var card=$("card_"+sku);
+  if(card){
+   card.scrollIntoView({behavior:"smooth",block:"center"});
+   card.style.outline="3px solid var(--or)";
+   setTimeout(function(){card.style.outline=""},2500);
+  }
+ },50);
+ var p=S.prod.filter(function(x){return x.sku===sku})[0];
+ say("Alternativa seleccionada: "+(p?p.mod:sku)+" en talla "+talla+".");
+}
+
+/* VISTA 0: PISO DE VENTAS */
+function vPiso(){
+ var u=+$("umbral").value,over=S.cola.some(function(c){return(Date.now()-c.t0)/1000>u});
+ var h=over?'<div class="alert">Hay clientes esperando más de '+fmt(u)+'. Envía apoyo al piso de ventas.</div>':"";
+ 
+ var nextVid=S.order.filter(function(id){var v=vById(id);return v&&v.st==="Disponible"})[0];
+ var nextVend=nextVid?vById(nextVid):null;
+
+ h+='<div class="card" style="margin-bottom:14px;border-left:5px solid var(--or);background:var(--bl2);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">';
+ h+='<div><div class="mu" style="font-weight:700">🎯 PRÓXIMO EN TURNO PARA ATENDER</div><div class="big" style="color:var(--bl)">'+(nextVend?esc(nextVend.n):'Sin vendedores disponibles')+'</div><small class="mu">'+(nextVend?'Disponible en piso para atender de inmediato al siguiente cliente':'Todos los vendedores están atendiendo o en descanso')+'</small></div>';
+ h+='<span class="tag '+(nextVend?'t-Disponible':'t-Descanso')+'" style="font-size:14px;padding:6px 14px">'+(nextVend?'Turno 01':'En espera de vendedor')+'</span>';
+ h+='</div>';
+
+ h+='<h2>Piso de ventas</h2><div class="grid"><div class="card">';
+ h+='<h3>Recepción de Clientes (Modo Tablet)</h3>';
+ h+='<button class="btn or" style="width:100%;font-size:16px;padding:12px;margin-bottom:10px" onclick="checkin()">📲 Nuevo cliente / Solicitar atención</button>';
+ h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="mu">Fila de espera ('+S.cola.length+'):</span><button class="btn sm gh" onclick="asignar()" '+(S.cola.length?"":"disabled")+'>Asignar manual</button></div>';
+ h+=S.cola.length?S.cola.map(function(c){return'<div class="row"><span>Cliente #'+c.id+'</span><span class="mu">espera <b data-t="'+c.t0+'">0:00</b></span></div>'}).join(""):'<p class="mu" style="font-size:13px">Nadie esperando. Toca el botón naranja al llegar un cliente para asignarlo en automático.</p>';
+ h+='</div>';
+
+ h+='<div class="card"><h3>Vendedores (orden rotativo)</h3>'+S.order.map(function(id,i){var v=vById(id);
+  if(!v)return"";
+  return'<div class="row"><span><b>'+(i+1)+'.</b> '+esc(v.n)+' '+tag(v.st)+(v.cli?' <span class="mu">· cliente #'+v.cli+'</span>':"")+'</span><span>'+
+  (!can(id)?"":v.st==="Atendiendo"?'<button class="btn sm gh" onclick="fin('+id+')">Finalizar</button>':'<select aria-label="Estado de '+esc(v.n)+'" onchange="setSt('+id+',this.value)"><option'+(v.st==="Disponible"?" selected":"")+'>Disponible</option><option'+(v.st==="Descanso"?" selected":"")+'>Descanso</option></select>')+'</span></div>'}).join("")+'</div></div>';
+ 
+ h+='<div class="card" style="margin-top:14px"><h3>Bitácora de atención a clientes</h3>'+(S.atendidos.length?'<div class="scroll"><table><tr><th>Hora</th><th>Vendedor</th><th>Cliente</th><th>Tiempo de espera</th></tr>'+S.atendidos.slice().reverse().map(function(a){return'<tr><td>'+a.h+'</td><td>'+esc(a.v)+'</td><td>Cliente #'+a.c+'</td><td>'+(a.esp===0?'<span class="tag t-Disponible">Inmediato</span>':fmt(a.esp))+'</td></tr>'}).join("")+'</table></div>':'<p class="mu">Aquí quedará registrado quién atendió a cada cliente, y cuándo.</p>')+'</div>';
+ return h;
+}
+
+/* Render Card Inventario */
+function renderCardInv(p){
+ var selT=S.sel[p.sku];
+ var stDisp=selT?(p.st[selT]||0):0;
+ var cant=Math.min(stDisp||1,Math.max(1,S.cantSel[p.sku]||1));
+
+ var cardHtml='<div class="card" id="card_'+p.sku+'"><b>'+esc(p.mod)+'</b><div class="mu">SKU '+p.sku+' · '+esc(p.cat)+' · '+tagSeg(p.seg)+' · <b>'+money(p.pr)+'</b></div>';
+ 
+ cardHtml+='<div class="sizes">'+TALLAS.map(function(t){
+  var st=p.st[t]||0;
+  var isSel=S.sel[p.sku]==t;
+  return '<button class="sz '+(isSel?'on':'')+' '+(st===0?'out':'')+'" onclick="S.sel[\''+p.sku+'\']=\''+t+'\';render()">'+t+' <small>('+st+')</small></button>';
+ }).join("")+'</div>';
+
+ if(selT&&stDisp===0){
+  var tallasAlt=TALLAS.filter(function(t){return (p.st[t]||0)>0});
+  var modelosAlt=S.prod.filter(function(x){return x.sku!==p.sku&&(x.cat===p.cat||x.seg===p.seg)&&(x.st[selT]||0)>0});
+  cardHtml+='<div class="alt-box"><b>⚠️ Talla '+selT+' agotada en este modelo.</b>';
+  if(tallasAlt.length){
+   cardHtml+='<br><small>Tallas disponibles en este calzado: '+tallasAlt.join(', ')+'</small>';
+  }
+  if(modelosAlt.length){
+   cardHtml+='<br><small>Alternativas disponibles en talla '+selT+':<br>'+modelosAlt.slice(0,2).map(function(alt){
+    return '• <a href="javascript:void(0)" onclick="seleccionarYDesplazar(\''+alt.sku+'\',\''+selT+'\')">'+esc(alt.mod)+' ('+money(alt.pr)+')</a>';
+   }).join("<br>")+'</small>';
+  }
+  cardHtml+='</div>';
+ }
+
+ cardHtml+='<div class="loc">'+esc(p.loc)+'</div>';
+
+ cardHtml+='<div style="display:flex;gap:8px;align-items:center;margin-top:10px">';
+ cardHtml+='<label class="mu" style="white-space:nowrap">Cant: <input type="number" min="1" max="'+Math.max(1,stDisp)+'" value="'+cant+'" style="width:60px;padding:5px" '+(stDisp<1?'disabled':'')+' onchange="S.cantSel[\''+p.sku+'\']=Math.max(1,Math.min('+(stDisp||1)+',+this.value||1));render()"></label>';
+ cardHtml+='<button class="btn" style="flex:1" '+(stDisp<1?'disabled':'')+' onclick="pedir(\''+p.sku+'\')">'+(stDisp<1?'Sin existencia':'Crear pedido')+'</button>';
+ cardHtml+='</div></div>';
+ return cardHtml;
+}
+
+/* VISTA 1: INVENTARIO (CON BOTÓN VER TODOS, CONTADORES Y AGRUPACIÓN POR SEGMENTO) */
+function vInv(){
+ var at=S.vend.filter(function(v){return v.st==="Atendiendo"&&can(v.id)});
+ if(S.act&&vById(S.act).st!=="Atendiendo")S.act=null;
+ if(S.user.rol!=="admin")S.act=vById(S.user.id)&&vById(S.user.id).st==="Atendiendo"?S.user.id:null;
+
+ var h='<h2>Inventario y Catálogo</h2>'+(at.length?"":'<div class="alert" style="animation:none">Nadie está atendiendo a un cliente todavía. Pulsa “Nuevo cliente / Solicitar atención” en Piso de ventas.</div>');
+
+ var pedAct=null;
+ if(S.act){
+  var vAct=vById(S.act);
+  if(vAct&&vAct.cli){
+   pedAct=S.pedidos.filter(function(p){
+    return p.est!=="Entregado"&&p.est!=="Cancelado"&&p.v===S.act&&p.cli===vAct.cli;
+   })[0];
+  }
+ }
+ if(pedAct){
+  var pedPares=(pedAct.items||[]).reduce(function(a,it){return a+(it.cant||1)},0);
+  var pedSub=(pedAct.items||[]).reduce(function(a,it){return a+(it.cant||1)*(it.pr||0)},0);
+  h+='<div class="card" style="margin-bottom:14px;background:var(--bl2);border-color:var(--bl);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">' +
+   '<span><b>🛒 Pedido activo #'+pedAct.id+' en curso</b> ('+pedPares+' par'+(pedPares>1?'es':'')+' · Subtotal '+money(pedSub)+')</span>' +
+   '<button class="btn sm or" onclick="S.tab=2;render()">Ir a Mis pedidos / Cobrar</button>' +
+  '</div>';
+ }
+ 
+ var q=(S.q||"").toLowerCase();
+ var matchQ=function(p){
+  return !q||p.mod.toLowerCase().indexOf(q)>-1||p.sku.indexOf(q)>-1||p.cat.toLowerCase().indexOf(q)>-1;
+ };
+
+ var countsInv={
+  "Todos": S.prod.filter(function(p){return matchQ(p)}).length,
+  "Hombre": S.prod.filter(function(p){return p.seg==="Hombre"&&matchQ(p)}).length,
+  "Mujer": S.prod.filter(function(p){return p.seg==="Mujer"&&matchQ(p)}).length,
+  "Niño": S.prod.filter(function(p){return p.seg==="Niño"&&matchQ(p)}).length
+ };
+
+ /* Barra de búsqueda con botón "Ver todos" */
+ h+='<div class="card" style="margin-bottom:14px"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">';
+ h+='<label>Vendedor que atiende: <select onchange="S.act=+this.value||null;render()"><option value="">Elegir…</option>'+at.map(function(v){return'<option value="'+v.id+'"'+(S.act===v.id?" selected":"")+'>'+esc(v.n)+' (cliente #'+v.cli+')</option>'}).join("")+'</select></label>';
+ h+='<div style="flex:1;display:flex;gap:6px;min-width:240px">' +
+  '<input id="q" placeholder="Buscar modelo o SKU…" value="'+esc(S.q)+'" oninput="S.q=this.value;render(1)" style="flex:1">' +
+  '<button class="btn sm or" onclick="openEscanerModal()">📷 Escanear SKU</button>' +
+  '<button class="btn sm gh" onclick="S.q=\'\';S.filterSeg=\'Todos\';render()" title="Mostrar todo el catálogo de zapatos">Ver todos</button>' +
+ '</div>';
+ h+='</div>';
+
+ h+='<div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap"><span class="mu" style="font-weight:600">Segmento:</span>';
+ ["Todos","Hombre","Mujer","Niño"].forEach(function(sg){
+  var cnt=countsInv[sg]||0;
+  h+='<button class="pill '+(S.filterSeg===sg?'on':'')+'" onclick="S.filterSeg=\''+sg+'\';render()">'+sg+' ('+cnt+')</button>';
+ });
+ h+='</div></div>';
+
+ var ps=S.prod.filter(function(p){
+  var matchSeg=S.filterSeg==="Todos"||p.seg===S.filterSeg;
+  return matchSeg&&matchQ(p);
+ });
+
+ /* Contador visible de modelos disponibles */
+ h+='<div class="mu" style="margin:10px 0 6px;font-weight:600;display:flex;justify-content:space-between;align-items:center">';
+ h+='<span>Mostrando '+ps.length+' de '+S.prod.length+' modelos disponibles en inventario</span>';
+ if(S.q||S.filterSeg!=="Todos"){
+  h+='<a href="javascript:void(0)" onclick="S.q=\'\';S.filterSeg=\'Todos\';render()" style="color:var(--bl);font-size:12px">Quitar filtros</a>';
+ }
+ h+='</div>';
+
+ if(!ps.length){
+  h+='<div class="card" style="text-align:center;padding:24px;margin-top:12px">';
+  h+='<p class="mu" style="font-size:15px">No se encontraron productos con los filtros aplicados.</p>';
+  h+='<button class="btn sm gh" onclick="S.q=\'\';S.filterSeg=\'Todos\';render()">Ver todo el catálogo</button>';
+  h+='</div>';
+ }else{
+  var SEGS_ORDER=["Hombre","Mujer","Niño"];
+  var segsToShow=S.filterSeg==="Todos"?SEGS_ORDER:[S.filterSeg];
+
+  segsToShow.forEach(function(sg){
+   var segProds=ps.filter(function(p){return p.seg===sg});
+   if(!segProds.length)return;
+
+   h+='<div style="margin:20px 0 10px;display:flex;align-items:center;justify-content:space-between">';
+   h+='<h3 style="margin:0;font-size:17px;display:flex;align-items:center;gap:8px">Calzado para '+sg+' <span class="tag tag-seg-'+(sg==='Niño'?'Niño':sg)+'">'+segProds.length+' modelo'+(segProds.length>1?'s':'')+'</span></h3>';
+   h+='</div>';
+
+   h+='<div class="grid">';
+   h+=segProds.map(renderCardInv).join("");
+   h+='</div>';
+  });
+ }
+
+ return h;
+}
+
+/* VISTA 2 (Vendedor): MIS PEDIDOS */
+function vMisPedidos(){
+ var ps=S.pedidos.filter(function(p){
+  return p.v===S.user.id&&p.est!=="Entregado"&&p.est!=="Cancelado";
+ });
+
+ var h='<h2>Mis pedidos activos</h2>';
+ if(!ps.length){
+  h+='<div class="card"><p class="mu">No tienes pedidos pendientes en bodega. Cuando crees pedidos desde Inventario para tus clientes, aparecerán aquí con su ubicación física exacta para que monitorees su entrega y generes el ticket.</p></div>';
+  return h;
+ }
+
+ h+='<div style="display:flex;flex-direction:column;gap:14px">';
+ h+=ps.map(function(p){
+  var items=p.items||[];
+  var totalPares=items.reduce(function(a,it){return a+(it.cant||1)},0);
+  var subtotal=items.reduce(function(a,it){return a+(it.cant||1)*(it.pr||0)},0);
+  var desc=Math.min(subtotal,Math.max(0,parseFloat(p.desc)||0));
+  var totalPagar=Math.max(0,subtotal-desc);
+  var comTotal=com()*totalPares;
+  var hayEnPrep=items.some(function(it){return it.est==="En preparación"});
+  var todoListo=items.length>0&&items.every(function(it){return it.est==="Listo"});
+
+  var tiempoInfo="";
+  if(p.est==="En preparación"){
+   tiempoInfo='<span class="mu">En espera de bodega: <b data-t="'+p.t0+'">'+fmt(Math.max(0,Math.round((Date.now()-p.t0)/1000)))+'</b></span>';
+  }else if(p.est==="Listo"){
+   var dur=Math.max(0,Math.round(((p.tListo||Date.now())-p.t0)/1000));
+   tiempoInfo='<span class="tag t-Listo">Surtido en '+fmt(dur)+'</span>';
+  }
+
+  var itemsHtml=items.map(function(it){
+   var c=it.cant||1;
+   var subIt=c*(it.pr||0);
+   return '<div class="row" style="flex-wrap:wrap;gap:10px;padding:10px 0">' +
+    '<div style="flex:1;min-width:220px">' +
+     '<div><b>'+esc(it.mod)+'</b> '+tag(it.est)+'</div>' +
+     '<div class="mu">SKU '+esc(it.sku)+' · Talla <b>'+it.t+'</b> · Precio unitario: '+money(it.pr||0)+' · Subtotal: <b>'+money(subIt)+'</b></div>' +
+     '<div class="loc" style="margin-top:4px;display:inline-block">'+esc(it.loc)+'</div>' +
+    '</div>' +
+    '<div style="display:flex;align-items:center;gap:6px">' +
+     '<button class="btn sm gh" title="Restar 1 par" onclick="ajustarCantItem('+p.id+','+it.itemId+',-1)">-</button>' +
+     '<b style="min-width:24px;text-align:center">'+c+'</b>' +
+     '<button class="btn sm gh" title="Sumar 1 par" onclick="ajustarCantItem('+p.id+','+it.itemId+',1)">+</button>' +
+     '<button class="btn sm er" onclick="quitarItemPedido('+p.id+','+it.itemId+')">Quitar</button>' +
+    '</div>' +
+   '</div>';
+  }).join("");
+
+  return '<div class="card">' +
+   '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--bd)">' +
+    '<div><b style="font-size:17px">Pedido #'+p.id+(p.cli?' · Cliente #'+p.cli:'')+'</b> '+tag(p.est)+'</div>' +
+    '<div>'+tiempoInfo+'</div>' +
+   '</div>' +
+   '<div style="margin:6px 0">'+itemsHtml+'</div>' +
+   '<div style="margin-top:10px;padding:10px;background:var(--bl2);border-radius:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">' +
+    '<div>' +
+     '<label style="font-size:13px">Descuento global ($): <input id="desc_'+p.id+'" type="number" value="'+desc+'" min="0" max="'+subtotal+'" step="10" style="width:90px;padding:4px" oninput="actualizarDescPedido('+p.id+',this.value)"></label>' +
+     '<div class="mu" style="margin-top:4px">Total de pares: <b>'+totalPares+'</b> · Comisión total: <b>'+money(comTotal)+'</b></div>' +
+    '</div>' +
+    '<div style="text-align:right">' +
+     '<div class="mu">Subtotal: '+money(subtotal)+'</div>' +
+     '<div style="font-size:17px;font-weight:700">Total a pagar: <span id="tot_pagar_'+p.id+'">'+money(totalPagar)+'</span></div>' +
+    '</div>' +
+   '</div>' +
+   '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">' +
+    '<button class="btn sm gh" onclick="S.act='+p.v+';S.tab=1;render()">+ Seguir añadiendo zapatos</button>' +
+    (hayEnPrep?'<button class="btn sm" onclick="marcarPedidoTodoListo('+p.id+')">Marcar todo listo</button>':'') +
+    (todoListo?'<button class="btn sm or" onclick="venderPedido('+p.id+')">✅ Entregar y vender todo ('+totalPares+' par'+(totalPares>1?'es':'')+')</button>':'') +
+    '<button class="btn sm gh" style="color:var(--er);margin-left:auto" onclick="cancelarPedido('+p.id+')">Cancelar pedido completo</button>' +
+   '</div>' +
+  '</div>';
+ }).join("");
+ h+='</div>';
+ return h;
+}
+
+/* VISTA 2 (Administrador): BODEGA */
+/* Render Card Bodega */
+function renderCardBod(p){
+ var totStock=TALLAS.reduce(function(a,t){return a+(p.st[t]||0)},0);
+ return '<div class="card" id="card_bod_'+p.sku+'">' +
+  '<div style="display:flex;justify-content:space-between;align-items:flex-start"><b>'+esc(p.mod)+'</b><span class="tag '+(totStock>5?'t-Disponible':'t-Descanso')+'">'+totStock+' pares totales</span></div>' +
+  '<div class="mu">SKU '+p.sku+' · '+esc(p.cat)+' · '+tagSeg(p.seg)+' · <b>'+money(p.pr)+'</b></div>' +
+  '<p class="loc">'+esc(p.loc)+'</p>' +
+  '<div style="margin:6px 0"><small class="mu">Existencias por talla:</small>' +
+   '<div class="sizes">'+TALLAS.map(function(t){
+    var st=p.st[t]||0;
+    return '<span class="sz '+(st===0?'out':'')+'" style="cursor:default">'+t+' <small>('+st+')</small></span>';
+   }).join("")+'</div>' +
+  '</div>' +
+  '<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--bd);display:flex;gap:6px;align-items:center;flex-wrap:wrap">' +
+   '<small class="mu" style="font-weight:600">Reabastecer:</small>' +
+   '<select id="talla_add_'+p.sku+'" style="padding:4px">'+TALLAS.map(function(t){return '<option value="'+t+'">T.'+t+' ('+(p.st[t]||0)+')</option>'}).join("")+'</select>' +
+   '<input id="cant_add_'+p.sku+'" type="number" min="1" value="5" style="width:60px;padding:4px">' +
+   '<button class="btn sm ok" onclick="agregarStockBodega(\''+p.sku+'\')">+ Agregar</button>' +
+  '</div>' +
+ '</div>';
+}
+
+function vBodAdmin(){
+ var h='<h2>Bodega · Gestión de Inventario Físico y Surtido</h2>';
+ 
+ var q=(S.qBod||"").toLowerCase();
+ var matchQBod=function(p){
+  return !q||p.mod.toLowerCase().indexOf(q)>-1||p.sku.indexOf(q)>-1||p.cat.toLowerCase().indexOf(q)>-1;
+ };
+
+ var countsBod={
+  "Todos": S.prod.filter(function(p){return matchQBod(p)}).length,
+  "Hombre": S.prod.filter(function(p){return p.seg==="Hombre"&&matchQBod(p)}).length,
+  "Mujer": S.prod.filter(function(p){return p.seg==="Mujer"&&matchQBod(p)}).length,
+  "Niño": S.prod.filter(function(p){return p.seg==="Niño"&&matchQBod(p)}).length
+ };
+
+ h+='<div class="card" style="margin-bottom:14px"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">';
+ h+='<div style="flex:1;display:flex;gap:6px;min-width:240px">' +
+  '<input id="q_bod" placeholder="Buscar por modelo o código SKU…" value="'+esc(S.qBod)+'" oninput="S.qBod=this.value;render(1)" style="flex:1">' +
+  '<button class="btn sm gh" onclick="S.qBod=\'\';S.filterSegBod=\'Todos\';render()" title="Mostrar todo el inventario de bodega">Ver todos</button>' +
+ '</div>';
+ h+='<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="mu" style="font-weight:600">Segmento:</span>';
+ ["Todos","Hombre","Mujer","Niño"].forEach(function(sg){
+  var cnt=countsBod[sg]||0;
+  h+='<button class="pill '+(S.filterSegBod===sg?'on':'')+'" onclick="S.filterSegBod=\''+sg+'\';render()">'+sg+' ('+cnt+')</button>';
+ });
+ h+='</div></div></div>';
+
+ var ps=S.prod.filter(function(p){
+  var matchSeg=S.filterSegBod==="Todos"||p.seg===S.filterSegBod;
+  return matchSeg&&matchQBod(p);
+ });
+
+ h+='<div class="mu" style="margin:10px 0 6px;font-weight:600;display:flex;justify-content:space-between;align-items:center">';
+ h+='<span>Catálogo de Bodega: '+ps.length+' de '+S.prod.length+' modelos</span>';
+ if(S.qBod||S.filterSegBod!=="Todos"){
+  h+='<a href="javascript:void(0)" onclick="S.qBod=\'\';S.filterSegBod=\'Todos\';render()" style="color:var(--bl);font-size:12px">Quitar filtros</a>';
+ }
+ h+='</div>';
+
+ if(!ps.length){
+  h+='<div class="card" style="text-align:center;padding:24px;margin-top:12px">';
+  h+='<p class="mu" style="font-size:15px">No hay productos que coincidan con la búsqueda en bodega.</p>';
+  h+='<button class="btn sm gh" onclick="S.qBod=\'\';S.filterSegBod=\'Todos\';render()">Ver todo el catálogo</button>';
+  h+='</div>';
+ }else{
+  var SEGS_ORDER=["Hombre","Mujer","Niño"];
+  var segsToShowB=S.filterSegBod==="Todos"?SEGS_ORDER:[S.filterSegBod];
+
+  segsToShowB.forEach(function(sg){
+   var segProds=ps.filter(function(p){return p.seg===sg});
+   if(!segProds.length)return;
+
+   h+='<div style="margin:20px 0 10px;display:flex;align-items:center;justify-content:space-between">';
+   h+='<h3 style="margin:0;font-size:17px;display:flex;align-items:center;gap:8px">Calzado para '+sg+' <span class="tag tag-seg-'+(sg==='Niño'?'Niño':sg)+'">'+segProds.length+' modelo'+(segProds.length>1?'s':'')+'</span></h3>';
+   h+='</div>';
+
+   h+='<div class="grid">';
+   h+=segProds.map(renderCardBod).join("");
+   h+='</div>';
+  });
+ }
+
+ var pedidosGlobal=S.pedidos.filter(function(p){return p.est!=="Entregado"&&p.est!=="Cancelado"});
+ var totalArticulos=pedidosGlobal.reduce(function(a,p){return a+(p.items?p.items.length:0)},0);
+ h+='<div class="card" style="margin-top:20px"><h3>Monitoreo Global de Pedidos Activos ('+pedidosGlobal.length+' pedido'+(pedidosGlobal.length===1?'':'s')+' · '+totalArticulos+' artículo'+(totalArticulos===1?'':'s')+')</h3>';
+ if(pedidosGlobal.length){
+  var rowsBod=[];
+  pedidosGlobal.forEach(function(p){
+   var v=vById(p.v);
+   var dur=Math.max(0,Math.round(((p.tListo||Date.now())-p.t0)/1000));
+   var items=p.items||[];
+   var todoListo=items.length>0&&items.every(function(x){return x.est==="Listo"});
+   var hayEnPrep=items.some(function(x){return x.est==="En preparación"});
+   items.forEach(function(it){
+    var acciones='';
+    if(it.est==="En preparación"){
+     acciones+='<button class="btn sm" onclick="marcarItemListo('+p.id+','+it.itemId+')">Listo</button> ';
+     if(items.length>1&&hayEnPrep){
+      acciones+='<button class="btn sm gh" onclick="marcarPedidoTodoListo('+p.id+')" title="Marcar todo el pedido listo">Todo el pedido</button> ';
+     }
+    }else if(todoListo){
+     acciones+='<button class="btn sm or" onclick="venderPedido('+p.id+')">Venta</button> ';
+    }
+    acciones+='<button class="btn sm gh" style="color:var(--er)" onclick="cancelarPedido('+p.id+')">Cancelar</button>';
+
+    rowsBod.push('<tr><td><b>#'+p.id+'</b>'+(p.cli?'<br><small class="mu">Cli #'+p.cli+'</small>':'')+'</td><td>'+esc(v?v.n:'Vendedor')+'</td><td>'+esc(it.mod)+'</td><td>'+it.t+'</td><td>'+(it.cant||1)+'</td><td class="mu"><small>'+esc(it.loc)+'</small></td><td>'+tag(it.est)+'</td><td>'+(it.est==="Listo"?'Listo en '+fmt(dur):'<b data-t="'+p.t0+'">0:00</b>')+'</td><td>'+acciones+'</td></tr>');
+   });
+  });
+  h+='<div class="scroll"><table><tr><th>Pedido</th><th>Vendedor</th><th>Modelo</th><th>Talla</th><th>Cant</th><th>Ubicación</th><th>Estado</th><th>Tiempo</th><th>Acción</th></tr>'+rowsBod.join("")+'</table></div>';
+ }else{
+  h+='<p class="mu">No hay pedidos pendientes en preparación en este momento.</p>';
+ }
+ h+='</div>';
+
+ return h;
+}
+
+async function agregarStockBodega(sku){
+ var tVal=String($("talla_add_"+sku).value);
+ var cantVal=parseInt($("cant_add_"+sku).value,10);
+ if(isNaN(cantVal)||cantVal<=0){
+  alert("Ingresa una cantidad válida mayor a 0.");
+  return;
+ }
+ var r=await api("POST","/api/inventario/agregar",{sku:sku,t:tVal,cant:cantVal});
+ if(!r.ok)return say(r.msg);
+ await syncEstado();
+ if(r.msg)say(r.msg);
+}
+
+function agruparVentasPorFolio(lista){
+ var map={},order=[];
+ lista.forEach(function(v){
+  if(!map[v.folio]){
+   map[v.folio]={
+    folio:v.folio,
+    fechaISO:v.fechaISO,
+    hora:v.hora,
+    v:v.v,
+    pares:0,
+    tot:0,
+    c:0,
+    modelos:[]
+   };
+   order.push(map[v.folio]);
+  }
+  var g=map[v.folio];
+  g.pares+=(v.cant||1);
+  g.tot+=(v.tot||0);
+  g.c+=(v.c||0);
+  g.modelos.push(esc(v.mod)+' (T.'+v.t+' ×'+(v.cant||1)+')');
+ });
+ return order;
+}
+
+/* VISTA 3 (Administrador): ADMINISTRACIÓN */
+function vAdm(){
+ var ini=S.filterFecIni,fin=S.filterFecFin;
+ var vFiltradas=S.ventas.filter(function(v){
+  if(ini&&v.fechaISO<ini)return false;
+  if(fin&&v.fechaISO>fin)return false;
+  return true;
+ });
+
+ var ventasAgrupadas=agruparVentasPorFolio(vFiltradas);
+ var totVentas=vFiltradas.reduce(function(a,v){return a+v.tot},0);
+ var paresVendidos=vFiltradas.reduce(function(a,v){return a+v.cant},0);
+ var comTotal=vFiltradas.reduce(function(a,v){return a+v.c},0);
+ var ticketProm=ventasAgrupadas.length?(totVentas/ventasAgrupadas.length):0;
+
+ var cats={};
+ vFiltradas.forEach(function(v){cats[v.cat]=(cats[v.cat]||0)+v.tot});
+ var ks=Object.keys(cats),mx=Math.max.apply(null,ks.map(function(k){return cats[k]}).concat(1));
+
+ var h='<h2>Panel de Administración y Control</h2>';
+
+ h+='<div class="card" style="margin-bottom:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">' +
+  '<b>Periodo de reporte:</b> ' +
+  '<label>Desde: <input type="date" id="f_ini" value="'+esc(S.filterFecIni)+'"></label> ' +
+  '<label>Hasta: <input type="date" id="f_fin" value="'+esc(S.filterFecFin)+'"></label> ' +
+  '<button class="btn sm" onclick="S.filterFecIni=$(\'f_ini\').value;S.filterFecFin=$(\'f_fin\').value;render()">Generar</button> ' +
+  '<button class="btn sm gh" onclick="S.filterFecIni=\'\';S.filterFecFin=\'\';render()">Ver todo</button> ' +
+  '<button class="btn sm ok" style="margin-left:auto" onclick="exportarCSV()">📥 Exportar reporte (CSV)</button>' +
+ '</div>';
+
+ h+='<div class="grid">' +
+  '<div class="card"><div class="mu">Total de ventas</div><div class="big">'+money(totVentas)+'</div></div>' +
+  '<div class="card"><div class="mu">Pares vendidos</div><div class="big">'+paresVendidos+'</div></div>' +
+  '<div class="card"><div class="mu">Ticket promedio</div><div class="big">'+money(ticketProm)+'</div></div>' +
+  '<div class="card"><div class="mu">Comisiones liquidadas</div><div class="big">'+money(comTotal)+'</div></div>' +
+ '</div>';
+
+ h+='<div class="grid" style="margin-top:14px"><div class="card"><h3>Comisiones ('+$("temp").value+': '+money(com())+' por par)</h3><div class="scroll"><table><tr><th>Vendedor</th><th>Pares</th><th>Ventas</th><th>Comisión</th></tr>'+S.vend.map(function(v){
+  var misV=vFiltradas.filter(function(x){return x.vId===v.id});
+  var pVend=misV.reduce(function(a,x){return a+x.cant},0);
+  var mVend=misV.reduce(function(a,x){return a+x.tot},0);
+  var cVend=misV.reduce(function(a,x){return a+x.c},0);
+  return '<tr><td>'+esc(v.n)+'</td><td>'+pVend+'</td><td>'+money(mVend)+'</td><td><b>'+money(cVend)+'</b></td></tr>';
+ }).join("")+'</table></div></div>';
+
+ h+='<div class="card"><h3>Ventas por categoría</h3>'+(ks.length?'<div class="bars">'+ks.map(function(k){return'<div style="height:'+Math.max(4,cats[k]/mx*100)+'%"><span>'+money(cats[k])+'</span></div>'}).join("")+'</div><div class="lab">'+ks.map(function(k){return'<div>'+esc(k)+'</div>'}).join("")+'</div>':'<p class="mu">Sin ventas registradas en el periodo seleccionado.</p>')+'</div></div>';
+
+ h+='<div class="card" style="margin-top:14px"><h3>Detalle de ventas por categoría</h3>';
+ if(vFiltradas.length){
+  var catData={};
+  vFiltradas.forEach(function(v){
+   if(!catData[v.cat])catData[v.cat]={pares:0,tot:0,desc:0,sub:0};
+   catData[v.cat].pares+=v.cant;
+   catData[v.cat].sub+=v.subtotal;
+   catData[v.cat].desc+=v.descuento;
+   catData[v.cat].tot+=v.tot;
+  });
+  h+='<div class="scroll"><table><tr><th>Categoría</th><th>Pares vendidos</th><th>Subtotal</th><th>Descuentos</th><th>Total neto</th></tr>'+Object.keys(catData).map(function(cat){
+   var cd=catData[cat];
+   return '<tr><td><b>'+esc(cat)+'</b></td><td>'+cd.pares+'</td><td>'+money(cd.sub)+'</td><td>-'+money(cd.desc)+'</td><td><b>'+money(cd.tot)+'</b></td></tr>';
+  }).join("")+'</table></div>';
+ }else{
+  h+='<p class="mu">No hay transacciones registradas.</p>';
+ }
+ h+='</div>';
+
+ h+='<div class="card" style="margin-top:14px"><h3>Historial de ventas del periodo</h3>';
+ if(ventasAgrupadas.length){
+  h+='<div class="scroll"><table><tr><th>Folio</th><th>Fecha/Hora</th><th>Vendedor</th><th>Modelos</th><th>Pares</th><th>Total</th><th>Comisión</th><th>Acción</th></tr>'+ventasAgrupadas.slice().reverse().map(function(g){
+   return '<tr><td><b>'+esc(g.folio)+'</b></td><td>'+g.fechaISO+' '+g.hora+'</td><td>'+esc(g.v)+'</td><td><small>'+g.modelos.join(', ')+'</small></td><td>'+g.pares+'</td><td><b>'+money(g.tot)+'</b></td><td>'+money(g.c)+'</td><td><button class="btn sm gh" onclick="verTicket(\''+esc(g.folio)+'\')">Ver ticket</button></td></tr>';
+  }).join("")+'</table></div>';
+ }else{
+  h+='<p class="mu">Sin tickets en este periodo.</p>';
+ }
+ h+='</div>';
+
+ var low=[];
+ S.prod.forEach(function(p){
+  TALLAS.forEach(function(t){
+   if(p.st[t]!==undefined&&p.st[t]<=1){
+    low.push({sku:p.sku,mod:p.mod,t:t,st:p.st[t]});
+   }
+  });
+ });
+ h+='<div class="card" style="margin-top:14px"><h3>Alertas de reabastecimiento (existencia ≤ 1)</h3>';
+ if(low.length){
+  h+='<div class="scroll"><table><tr><th>Modelo</th><th>Talla</th><th>Existencia</th><th>Acción</th></tr>'+low.map(function(it){
+   return '<tr><td><b>'+esc(it.mod)+'</b></td><td>'+it.t+'</td><td><span class="tag '+(it.st===0?'t-Cancelado':'t-Descanso')+'">'+it.st+' par(es)</span></td><td><button class="btn sm" onclick="reabastecer(\''+it.sku+'\',\''+it.t+'\',5)">+ Reabastecer (+5)</button></td></tr>';
+  }).join("")+'</table></div>';
+ }else{
+  h+='<p class="mu">Todo el inventario cuenta con stock suficiente.</p>';
+ }
+ h+='</div>';
+
+ h+='<div class="card" style="margin-top:14px"><h3>Catálogo de calzado (CRUD)</h3>';
+ h+='<div class="scroll"><table><tr><th>SKU</th><th>Modelo</th><th>Categoría</th><th>Segmento</th><th>Precio</th><th>Ubicación</th><th>Acciones</th></tr>'+S.prod.map(function(p){
+  return '<tr><td><b>'+p.sku+'</b></td><td>'+esc(p.mod)+'</td><td>'+esc(p.cat)+'</td><td>'+tagSeg(p.seg)+'</td><td>'+money(p.pr)+'</td><td><small>'+esc(p.loc)+'</small></td><td><button class="btn sm gh" onclick="openEditarProductoModal(\''+p.sku+'\')">✏️ Editar</button> <button class="btn sm er" onclick="eliminarProducto(\''+p.sku+'\')">🗑️</button></td></tr>';
+ }).join("")+'</table></div>';
+
+ h+='<h4 style="margin:16px 0 8px">Dar de alta nuevo modelo</h4><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">';
+ h+='<label>SKU<br><input id="n_sku" placeholder="Ej. 001250" style="width:100%"></label>';
+ h+='<label>Modelo<br><input id="n_mod" placeholder="Ej. Bota casual" style="width:100%"></label>';
+ h+='<label>Categoría<br><select id="n_cat" style="width:100%"><option>Casual</option><option>Deportivo</option><option>Formal</option><option>Bota</option><option>Sandalia</option></select></label>';
+ h+='<label>Segmento<br><select id="n_seg" style="width:100%"><option>Hombre</option><option>Mujer</option><option>Niño</option></select></label>';
+ h+='<label>Precio ($)<br><input id="n_pr" type="number" placeholder="Ej. 899" min="0" step="1" style="width:100%"></label>';
+ h+='<label>Pasillo<br><input id="n_pas" placeholder="Pasillo E" style="width:100%"></label>';
+ h+='<label>Estante<br><input id="n_est" placeholder="Estante 02" style="width:100%"></label>';
+ h+='<label>Sección<br><input id="n_sec" placeholder="Sección 3" style="width:100%"></label>';
+ h+='<label>Stock inicial x talla<br><input id="n_st" type="number" value="3" min="0" style="width:100%"></label>';
+ h+='</div><p style="margin-top:10px"><button class="btn or" onclick="crearModelo()">Guardar nuevo modelo</button></p></div>';
+
+ h+='<div class="card" style="margin-top:14px"><h3>Gestión de usuarios y empleados</h3>';
+ h+='<div class="scroll"><table><tr><th>Nombre</th><th>Usuario</th><th>RFC</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr>'+S.users.map(function(u){
+  return '<tr><td><b>'+esc(u.n)+'</b></td><td>'+esc(u.u)+'</td><td>'+esc(u.dni_rfc)+'</td><td>'+esc(u.correo)+'</td><td><span class="tag '+(u.rol==='admin'?'t-Atendiendo':'t-Disponible')+'">'+u.rol+'</span></td><td><span class="tag '+(u.activo?'t-Activo':'t-Inactivo')+'">'+(u.activo?'Activo':'Inactivo')+'</span></td><td><button class="btn sm gh" onclick="openEditarUsuarioModal('+u.id+')">✏️ Editar</button> <button class="btn sm '+(u.activo?'er':'ok')+'" onclick="toggleUsuarioActivo('+u.id+')">'+(u.activo?'Desactivar':'Activar')+'</button></td></tr>';
+ }).join("")+'</table></div>';
+
+ h+='<h4 style="margin:16px 0 8px">Registrar nuevo usuario</h4><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">';
+ h+='<label>Nombre completo<br><input id="u_nom" placeholder="Ej. Laura Méndez" style="width:100%"></label>';
+ h+='<label>Usuario<br><input id="u_usr" placeholder="Ej. laura_m" style="width:100%"></label>';
+ h+='<label>Contraseña<br><input id="u_pwd" type="password" placeholder="••••" style="width:100%"></label>';
+ h+='<label>DNI / RFC<br><input id="u_rfc" placeholder="MEL950210-XX1" style="width:100%"></label>';
+ h+='<label>Correo electrónico<br><input id="u_cor" placeholder="empleado@3hermanos.mx" style="width:100%"></label>';
+ h+='<label>Rol<br><select id="u_rol" style="width:100%"><option value="vendedor">Vendedor</option><option value="admin">Administrador</option></select></label>';
+ h+='</div><p style="margin-top:10px"><button class="btn or" onclick="crearUsuario()">Dar de alta empleado</button></p></div>';
+
+ h+='<div class="card" style="margin-top:14px"><h3>Gestión de proveedores</h3>';
+ h+='<div class="scroll"><table><tr><th>ID</th><th>Empresa</th><th>Contacto</th><th>Teléfono</th><th>Correo</th><th>Categoría calzado</th><th>Acción</th></tr>'+S.proveedores.map(function(prv){
+  return '<tr><td>#'+prv.id+'</td><td><b>'+esc(prv.nombre)+'</b></td><td>'+esc(prv.contacto)+'</td><td>'+esc(prv.telefono)+'</td><td>'+esc(prv.correo)+'</td><td>'+esc(prv.categoria_calzado)+'</td><td><button class="btn sm er" onclick="eliminarProveedor('+prv.id+')">🗑️</button></td></tr>';
+ }).join("")+'</table></div>';
+
+ h+='<h4 style="margin:16px 0 8px">Agregar nuevo proveedor</h4><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">';
+ h+='<label>Nombre de la empresa<br><input id="prv_nom" placeholder="Calzados del Norte" style="width:100%"></label>';
+ h+='<label>Persona de contacto<br><input id="prv_con" placeholder="Lic. Juan Pérez" style="width:100%"></label>';
+ h+='<label>Teléfono<br><input id="prv_tel" placeholder="993 555 1234" style="width:100%"></label>';
+ h+='<label>Correo electrónico<br><input id="prv_cor" placeholder="proveedor@empresa.com" style="width:100%"></label>';
+ h+='<label>Categoría que surte<br><input id="prv_cat" placeholder="Bota y Zapato Industrial" style="width:100%"></label>';
+ h+='</div><p style="margin-top:10px"><button class="btn or" onclick="crearProveedor()">Registrar proveedor</button></p></div>';
+
+ h+='<div style="margin-top:20px;display:flex;justify-content:flex-end"><button class="btn sm er" onclick="reiniciarDemo()">Reiniciar datos demo</button></div>';
+
+ return h;
+}
+
+/* Modales de Edición */
+function openEditarProductoModal(sku){
+ var p=S.prod.filter(function(x){return x.sku===sku})[0];
+ if(!p)return;
+ var locParts=p.loc.split("·").map(function(s){return s.trim()});
+ var m=$("modal-overlay");
+ m.style.display="flex";
+ m.innerHTML=
+  '<div class="modal-box">' +
+   '<h3 style="margin-top:0">Editar producto (SKU: '+p.sku+')</h3>' +
+   '<label>Modelo<br><input id="ed_mod" value="'+esc(p.mod)+'" style="width:100%;margin-bottom:8px"></label>' +
+   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">' +
+    '<label>Categoría<br><select id="ed_cat" style="width:100%"><option '+(p.cat==="Casual"?"selected":"")+'>Casual</option><option '+(p.cat==="Deportivo"?"selected":"")+'>Deportivo</option><option '+(p.cat==="Formal"?"selected":"")+'>Formal</option><option '+(p.cat==="Bota"?"selected":"")+'>Bota</option><option '+(p.cat==="Sandalia"?"selected":"")+'>Sandalia</option></select></label>' +
+    '<label>Segmento<br><select id="ed_seg" style="width:100%"><option '+(p.seg==="Hombre"?"selected":"")+'>Hombre</option><option '+(p.seg==="Mujer"?"selected":"")+'>Mujer</option><option '+(p.seg==="Niño"?"selected":"")+'>Niño</option></select></label>' +
+   '</div>' +
+   '<label>Precio ($)<br><input id="ed_pr" type="number" value="'+p.pr+'" style="width:100%;margin-bottom:8px"></label>' +
+   '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px">' +
+    '<label>Pasillo<br><input id="ed_pas" value="'+esc(locParts[0]||'Pasillo A')+'" style="width:100%"></label>' +
+    '<label>Estante<br><input id="ed_est" value="'+esc(locParts[1]||'Estante 01')+'" style="width:100%"></label>' +
+    '<label>Sección<br><input id="ed_sec" value="'+esc(locParts[2]||'Sección 1')+'" style="width:100%"></label>' +
+   '</div>' +
+   '<div style="display:flex;justify-content:flex-end;gap:8px">' +
+    '<button class="btn gh sm" onclick="closeModal()">Cancelar</button>' +
+    '<button class="btn sm or" onclick="guardarEdicionProducto(\''+p.sku+'\')">Guardar cambios</button>' +
+   '</div>' +
+  '</div>';
+}
+
+async function guardarEdicionProducto(sku){
+ var p=S.prod.filter(function(x){return x.sku===sku})[0];
+ if(!p)return;
+ var payload={
+  mod:$("ed_mod").value.trim()||p.mod,
+  cat:$("ed_cat").value,
+  seg:$("ed_seg").value,
+  pr:parseFloat($("ed_pr").value)||p.pr,
+  loc:$("ed_pas").value.trim()+" · "+$("ed_est").value.trim()+" · "+$("ed_sec").value.trim()
+ };
+ closeModal();
+ var r=await api("PUT","/api/productos/"+encodeURIComponent(sku),payload);
+ if(!r.ok)return say(r.msg);
+ await syncEstado();
+ if(r.msg)say(r.msg);
+}
+
+function eliminarProducto(sku){
+ var p=S.prod.filter(function(x){return x.sku===sku})[0];
+ if(!p)return;
+ openConfirmModal("Eliminar calzado SKU "+sku,"¿Seguro que deseas eliminar '"+p.mod+"'? Esta acción no se puede deshacer.",async function(){
+  var r=await api("DELETE","/api/productos/"+encodeURIComponent(sku));
+  if(!r.ok)return say(r.msg);
+  await syncEstado();
+  if(r.msg)say(r.msg);
+ },true);
+}
+
+function openEditarUsuarioModal(id){
+ var u=S.users.filter(function(x){return x.id===id})[0];
+ if(!u)return;
+ var m=$("modal-overlay");
+ m.style.display="flex";
+ m.innerHTML=
+  '<div class="modal-box">' +
+   '<h3 style="margin-top:0">Editar usuario: '+esc(u.u)+'</h3>' +
+   '<label>Nombre completo<br><input id="edu_nom" value="'+esc(u.n)+'" style="width:100%;margin-bottom:8px"></label>' +
+   '<label>DNI / RFC<br><input id="edu_rfc" value="'+esc(u.dni_rfc)+'" style="width:100%;margin-bottom:8px"></label>' +
+   '<label>Correo electrónico<br><input id="edu_cor" value="'+esc(u.correo)+'" style="width:100%;margin-bottom:8px"></label>' +
+   '<label>Nueva contraseña (opcional)<br><input id="edu_pwd" type="password" placeholder="Dejar en blanco para conservar" style="width:100%;margin-bottom:8px"></label>' +
+   '<label>Rol<br><select id="edu_rol" style="width:100%;margin-bottom:12px"><option value="vendedor" '+(u.rol==="vendedor"?"selected":"")+'>Vendedor</option><option value="admin" '+(u.rol==="admin"?"selected":"")+'>Administrador</option></select></label>' +
+   '<div style="display:flex;justify-content:flex-end;gap:8px">' +
+    '<button class="btn gh sm" onclick="closeModal()">Cancelar</button>' +
+    '<button class="btn sm or" onclick="guardarEdicionUsuario('+u.id+')">Guardar cambios</button>' +
+   '</div>' +
+  '</div>';
+}
+
+async function guardarEdicionUsuario(id){
+ var u=S.users.filter(function(x){return x.id===id})[0];
+ if(!u)return;
+ var payload={
+  n:$("edu_nom").value.trim()||u.n,
+  dni_rfc:$("edu_rfc").value.trim()||u.dni_rfc,
+  correo:$("edu_cor").value.trim()||u.correo,
+  rol:$("edu_rol").value,
+  p:$("edu_pwd").value||""
+ };
+ closeModal();
+ var r=await api("PUT","/api/usuarios/"+id,payload);
+ if(!r.ok)return say(r.msg);
+ await syncEstado();
+ if(r.msg)say(r.msg);
+}
+
+async function toggleUsuarioActivo(id){
+ var u=S.users.filter(function(x){return x.id===id})[0];
+ if(!u)return;
+ if(S.user.id===id&&u.activo){
+  alert("No puedes desactivar tu propia cuenta activa de administrador.");
+  return;
+ }
+ var r=await api("PATCH","/api/usuarios/"+id+"/toggle");
+ if(!r.ok)return say(r.msg);
+ await syncEstado();
+ if(r.msg)say(r.msg);
+}
+
+async function crearModelo(){
+ var sku=$("n_sku").value.trim(),mod=$("n_mod").value.trim(),cat=$("n_cat").value,seg=$("n_seg").value;
+ var pr=parseFloat($("n_pr").value),pas=$("n_pas").value.trim()||"Pasillo A",est=$("n_est").value.trim()||"Estante 01",sec=$("n_sec").value.trim()||"Sección 1";
+ var stBase=parseInt($("n_st").value,10);
+ if(!sku||!mod||isNaN(pr)||pr<=0)return say("Por favor completa SKU, nombre de modelo y precio válido.");
+ if(isNaN(stBase)||stBase<0)stBase=2;
+ var loc=pas+" · "+est+" · "+sec;
+ var r=await api("POST","/api/productos",{sku:sku,mod:mod,cat:cat,seg:seg,pr:pr,loc:loc,stBase:stBase});
+ if(!r.ok)return say(r.msg);
+ await syncEstado();
+ if(r.msg)say(r.msg);
+}
+
+async function crearUsuario(){
+ var nom=$("u_nom").value.trim(),usr=$("u_usr").value.trim().toLowerCase(),pwd=$("u_pwd").value,rfc=$("u_rfc").value.trim(),cor=$("u_cor").value.trim(),rol=$("u_rol").value;
+ if(!nom||!usr||!pwd)return say("Completa al menos nombre, usuario y contraseña.");
+ var r=await api("POST","/api/usuarios",{n:nom,u:usr,p:pwd,dni_rfc:rfc,correo:cor,rol:rol});
+ if(!r.ok)return say(r.msg);
+ await syncEstado();
+ if(r.msg)say(r.msg);
+}
+
+async function crearProveedor(){
+ var nom=$("prv_nom").value.trim(),con=$("prv_con").value.trim(),tel=$("prv_tel").value.trim(),cor=$("prv_cor").value.trim(),cat=$("prv_cat").value.trim();
+ if(!nom||!con)return say("Indica al menos el nombre de la empresa proveedora y el contacto.");
+ var r=await api("POST","/api/proveedores",{nombre:nom,contacto:con,telefono:tel,correo:cor,categoria_calzado:cat});
+ if(!r.ok)return say(r.msg);
+ await syncEstado();
+ if(r.msg)say(r.msg);
+}
+
+function eliminarProveedor(id){
+ var p=S.proveedores.filter(function(x){return x.id===id})[0];
+ if(!p)return;
+ openConfirmModal("Eliminar proveedor","¿Deseas eliminar a '"+p.nombre+"' del directorio de proveedores?",async function(){
+  var r=await api("DELETE","/api/proveedores/"+id);
+  if(!r.ok)return say(r.msg);
+  await syncEstado();
+  if(r.msg)say(r.msg);
+ },true);
+}
+
+async function reabastecer(sku,t,n){
+ var r=await api("POST","/api/inventario/agregar",{sku:sku,t:String(t),cant:n||5});
+ if(!r.ok)return say(r.msg);
+ await syncEstado();
+ if(r.msg)say(r.msg);
+}
+
+function exportarCSV(){
+ var ini=S.filterFecIni,fin=S.filterFecFin;
+ var vFiltradas=S.ventas.filter(function(v){
+  if(ini&&v.fechaISO<ini)return false;
+  if(fin&&v.fechaISO>fin)return false;
+  return true;
+ });
+ 
+ var csv="\uFEFF";
+ csv+="REPORTE DE VENTAS Y COMISIONES - ZAPATERÍA 3 HERMANOS\r\n";
+ csv+="Sucursal: Villahermosa, Tabasco\r\n";
+ csv+="Periodo: "+(ini||"Inicio")+" al "+(fin||"Hoy")+"\r\n";
+ csv+="Generado el: "+new Date().toLocaleString("es-MX")+"\r\n\r\n";
+ 
+ csv+="Folio,Fecha,Hora,Vendedor,SKU,Modelo,Categoria,Segmento,Talla,Cantidad,PrecioUnitario,Subtotal,Descuento,TotalPagado,Comision\r\n";
+ vFiltradas.forEach(function(v){
+  csv+=[
+   '"'+v.folio+'"',
+   v.fechaISO,
+   v.hora,
+   '"'+v.v+'"',
+   '"'+v.sku+'"',
+   '"'+v.mod+'"',
+   '"'+v.cat+'"',
+   '"'+(v.seg||'General')+'"',
+   v.t,
+   v.cant,
+   v.precioUnit.toFixed(2),
+   v.subtotal.toFixed(2),
+   v.descuento.toFixed(2),
+   v.tot.toFixed(2),
+   v.c.toFixed(2)
+  ].join(",")+"\r\n";
+ });
+
+ var blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
+ var url=URL.createObjectURL(blob);
+ var a=document.createElement("a");
+ a.href=url;
+ a.download="Reporte_Ventas_SGCIC_"+new Date().toISOString().slice(0,10).replace(/-/g,"")+".csv";
+ document.body.appendChild(a);
+ a.click();
+ document.body.removeChild(a);
+ URL.revokeObjectURL(url);
+ say("Reporte CSV generado y descargado exitosamente.");
+}
+
+/* VISTA 3 (Vendedor): MIS COMISIONES */
+function vMis(){
+ var v=vById(S.user.id);
+ if(!v)return '<h2>Mis comisiones</h2><p class="mu">No tienes un perfil de vendedor asignado.</p>';
+ var mis=S.ventas.filter(function(x){return x.vId===v.id});
+ var misAgrupadas=agruparVentasPorFolio(mis);
+ return '<h2>Mis comisiones</h2><div class="grid"><div class="card"><div class="mu">Pares vendidos</div><div class="big">'+v.pares+'</div></div><div class="card"><div class="mu">Mis ventas netas</div><div class="big">'+money(v.monto)+'</div></div><div class="card"><div class="mu">Mi comisión acumulada</div><div class="big">'+money(v.com)+'</div></div></div><div class="card" style="margin-top:14px"><h3>Mis ventas registradas</h3>'+(misAgrupadas.length?'<div class="scroll"><table><tr><th>Folio</th><th>Hora</th><th>Modelos</th><th>Pares</th><th>Total</th><th>Comisión</th><th>Comprobante</th></tr>'+misAgrupadas.slice().reverse().map(function(g){return'<tr><td><b>'+esc(g.folio)+'</b></td><td>'+g.hora+'</td><td><small>'+g.modelos.join(', ')+'</small></td><td>'+g.pares+'</td><td>'+money(g.tot)+'</td><td><b>'+money(g.c)+'</b></td><td><button class="btn sm gh" onclick="verTicket(\''+esc(g.folio)+'\')">Ver ticket</button></td></tr>'}).join("")+'</table></div>':'<p class="mu">Todavía no tienes ventas registradas en esta sesión.</p>')+'</div>';
+}
+
+/* Despachador de Vistas por Rol */
+function renderView(){
+ var rol=S.user.rol;
+ if(S.tab===0)return vPiso();
+ if(S.tab===1)return vInv();
+ if(S.tab===2){
+  return rol==="admin"?vBodAdmin():vMisPedidos();
+ }
+ if(S.tab===3){
+  return rol==="admin"?vAdm():vMis();
+ }
+ return vPiso();
+}
+
+/* 1. REINICIAR FILTROS EN LOGIN Y LOGOUT */
+async function login(){
+ var u=$("lu").value.trim().toLowerCase(),p=$("lp").value;
+ var r=await api("POST","/api/login",{u:u,p:p});
+ if(!r.ok){S.err=r.msg||"Usuario o contraseña incorrectos.";return render()}
+ S.user=r.user;S.err="";S.msg="Bienvenido, "+r.user.n+".";
+ S.tab=0;
+ S.q="";
+ S.filterSeg="Todos";
+ try{sessionStorage.setItem("sgcic_user",JSON.stringify(r.user))}catch(e){}
+ await syncEstado();
+}
+
+function logout(){
+ S.user=null;
+ S.act=null;
+ S.msg="";
+ S.q="";
+ S.filterSeg="Todos";
+ try{sessionStorage.removeItem("sgcic_user")}catch(e){}
+ render();
+}
+
+function renderLogin(){
+ $("nav").style.display="none";$("who").textContent="";$("cfg1").style.display=$("cfg2").style.display=$("out").style.display="none";
+ $("app").innerHTML=(S.offline?'<div class="alert" role="alert" style="animation:none">⚠️ Sin conexión con el servidor. Verifica tu red o que el backend esté activo.</div>':"")+'<div class="card" style="max-width:380px;margin:30px auto"><h2>Iniciar sesión</h2>'+(S.err?'<div class="alert" role="alert" style="animation:none">'+S.err+'</div>':"")+'<p><label>Usuario<br><input id="lu" autocomplete="username" style="width:100%" onkeydown="if(event.key===\'Enter\')login()"></label></p><p><label>Contraseña<br><input id="lp" type="password" autocomplete="current-password" style="width:100%" onkeydown="if(event.key===\'Enter\')login()"></label></p><button class="btn or" style="width:100%" onclick="login()">Entrar</button><p class="mu">Cuentas de prueba:<br>Administrador: <b>admin</b> / <b>admin123</b><br>Vendedores: <b>vendedor1</b> a <b>vendedor5</b> / <b>1234</b></p></div>';
+}
+
+/* 1. REINICIAR FILTROS AL CAMBIAR DE PESTAÑA EN NAV */
+function render(keep){
+ if(!S.user){renderLogin();return}
+ var avTabs=getTabs();
+ if(S.tab>=avTabs.length)S.tab=0;
+ $("nav").style.display="";$("out").style.display="";
+ $("who").textContent=S.user.n+" ("+S.user.rol+")";
+ $("cfg1").style.display=$("cfg2").style.display=S.user.rol==="admin"?"":"none";
+ $("nav").innerHTML=avTabs.map(function(t,i){
+  return '<button class="'+(S.tab===i?"on":"")+'" onclick="S.tab='+i+';S.q=\'\';S.filterSeg=\'Todos\';S.msg=\'\';render()">'+t+'</button>';
+ }).join("");
+
+ var f=document.activeElement&&document.activeElement.id==="q";
+ var fBod=document.activeElement&&document.activeElement.id==="q_bod";
+ var offlineBanner=S.offline?'<div class="alert" role="alert" style="animation:none">⚠️ Se perdió la conexión con el servidor. Intentando reconectar automáticamente…</div>':"";
+ $("app").innerHTML=offlineBanner+(S.msg?'<div class="ok" role="status">'+esc(S.msg)+'</div>':"")+renderView();
+ 
+ if(f){var e=$("q");if(e){e.focus();e.setSelectionRange(e.value.length,e.value.length)}}
+ if(fBod){var eB=$("q_bod");if(eB){eB.focus();eB.setSelectionRange(eB.value.length,eB.value.length)}}
+}
+
+setInterval(function(){
+ document.querySelectorAll("[data-t]").forEach(function(e){
+  e.textContent=fmt(Math.max(0,Math.round((Date.now()-e.dataset.t)/1000)));
+ });
+ if(S.user&&S.tab===0){
+  var u=+$("umbral").value,o=S.cola.some(function(c){return(Date.now()-c.t0)/1000>u}),h=!!document.querySelector(".alert:not([role='alert'])");
+  if(o!==h)render();
+ }
+},1000);
+
+/* Sincronización automática multi-equipo cada 4 segundos */
+setInterval(function(){
+ if(!S.user)return;
+ var modalOpen=$("modal-overlay")&&$("modal-overlay").style.display==="flex";
+ if(modalOpen)return;
+ var ae=document.activeElement;
+ if(ae&&(ae.tagName==="INPUT"||ae.tagName==="SELECT"||ae.tagName==="TEXTAREA"))return;
+ syncEstado(true);
+},4000);
+
+$("temp").onchange=$("umbral").onchange=async function(){
+ await api("POST","/api/config",{temp:$("temp").value,umbral:+$("umbral").value});
+ await syncEstado();
+};
+
+(async function initApp(){
+ try{
+  var saved=sessionStorage.getItem("sgcic_user");
+  if(saved)S.user=JSON.parse(saved);
+ }catch(e){}
+ if(S.user){
+  await syncEstado(true);
+ }else{
+  render();
+ }
+})();
+</script>
+</body>
+</html>
